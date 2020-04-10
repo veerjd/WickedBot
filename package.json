@@ -1,0 +1,25 @@
+{
+  "name": "discordjs-bot-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "discord.js": "12.1.1",
+    "dotenv": "8.0.0",
+    "eslint": "6.8.0",
+    "express": "4.17.1",
+    "heroku": "7.27.1",
+    "kind-of": "6.0.3",
+    "minimist": "1.2.5",
+    "pg": "7.18.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node bot/index.js",
+    "bot": "nodemon bot/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "jd (alphaSeahorse)",
+  "license": "ISC"
+}
