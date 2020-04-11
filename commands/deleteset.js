@@ -5,7 +5,7 @@ module.exports = {
   description: 'delete set by id',
   aliases: ['del', 'delete'],
   usage(prefix) {
-    return `\`${prefix}incomplete [all OR player]\``
+    return `\`${prefix}deleteset 26\``
   },
   category: 'Staff',
   permsAllowed: ['MANAGE_GUILD', 'ADMINISTRATOR'],
