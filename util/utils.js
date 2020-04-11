@@ -1,5 +1,11 @@
 const tribes = require('./tribes')
 
+module.exports.getUserById = function(guild, id) {
+  const user = guild.members.cache.filter(x => x.user.id === id)
+
+  return user.first().user
+}
+
 module.exports.getUser = function(guild, name) {
   const user = guild.members.cache.filter(x => {
     let found

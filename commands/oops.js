@@ -5,12 +5,11 @@ module.exports = {
   description: 'go back one season',
   aliases: [],
   usage(prefix) {
-    return `\`${prefix}nextseason\``
+    return `\`${prefix}oops\``
   },
   category: 'hidden',
   permsAllowed: ['MANAGE_GUILD', 'ADMINISTRATOR'],
   execute: async function() {
-
     const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
     const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season

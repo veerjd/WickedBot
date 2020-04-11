@@ -1,4 +1,5 @@
 const db = require('../db/index')
+const { getUserById } = require('../util/utils')
 
 module.exports = {
   name: 'leaderboard',
@@ -14,18 +15,50 @@ module.exports = {
     const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
 
-    const sql = 'SELECT SUM(points), player_id FROM test_points INNER JOIN test_set ON set_id = id WHERE season = $1 AND points <> 0 GROUP BY player_id HAVING SUM(points) > 0 ORDER BY SUM(points) DESC'
+    const sqlAgg = 'SELECT COUNT(id), SUM(points), player_id FROM test_set INNER JOIN test_points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id' // HAVING COUNT(id) >= 3'
+    const valuesAgg = [season]
+    const resAgg = await db.query(sqlAgg, valuesAgg)
+    const rowsAgg = resAgg.rows
+    // if(rowsAgg.length < 2)
+    //   throw `Looks like not enough players have enough games (3 needed) for a leaderboard to be generated yet for season ${season}`
+
+    const sql = 'SELECT * FROM test_set WHERE completed = true AND season = $1 ORDER BY id'
     const values = [season]
-    const { rows } = await db.query(sql, values)
+    const resSets = await db.query(sql, values)
+    const sets = resSets.rows
 
-    if(rows.length === 0)
-      throw `Looks like no game was completed yet for season ${season}`
-    const tops = []
+    const sqlpoints = 'SELECT * FROM test_points LEFT JOIN test_set ON set_id = id WHERE completed = true AND season = $1 ORDER BY set_id'
+    const valuespoints = [season]
+    const resPoints = await db.query(sqlpoints, valuespoints)
+    const points = resPoints.rows
 
-    rows.forEach(scores => {
-      const player = message.client.users.cache.get(scores.player_id)
-      tops.push(`${player}:  **${scores.sum}**`)
+    rowsAgg.forEach(player => {
+      const playerPoints = points.filter(x => x.player_id === player.player_id)
+      const playerSets = sets.filter(x => playerPoints.some(y => y.set_id === x.id))
+      const opponentsPoints = points.filter(x => playerSets.some(y => y.id === x.set_id && x.player_id !== player.player_id))
+
+      let sumOpponent = 0
+      opponentsPoints.forEach(x => {
+        sumOpponent = sumOpponent + x.points
+      })
+      player.ratio = (player.sum / sumOpponent).toFixed(2)
     })
+
+    function compare(a, b) {
+      if (a.ratio < b.ratio)
+        return 1;
+      if (a.ratio > b.ratio)
+        return -1;
+      return 0;
+    }
+    rowsAgg.sort(compare)
+
+    const tops = []
+    rowsAgg.forEach(orderedPlayer => {
+      const user = getUserById(message.guild, orderedPlayer.player_id)
+      tops.push(`${user} (${orderedPlayer.count}):  **${orderedPlayer.ratio}**`)
+    })
+
     embed.setTitle(`Leaderboard for season ${season}`)
       .setDescription(tops)
     return embed
