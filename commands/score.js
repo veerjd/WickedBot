@@ -29,8 +29,10 @@ module.exports = {
       const valuesget = [setId]
       const ressel = await db.query(sqlget, valuesget)
       const resPlayers = [ ressel.rows[0].player_id, ressel.rows[1].player_id ]
-      if(ressel.rows[0].completed)
-        throw `Only moderators can override a score for a completed game with \`${process.env.PREFIX}changescore\``
+      if(ressel.rows[0].completed && !message.member.hasPermission('MANAGE_GUILD' || 'ADMINISTRATOR'))
+        throw 'Only moderators can override a score for a completed game.'
+      if(ressel.rows[0].completed && message.member.hasPermission('MANAGE_GUILD' || 'ADMINISTRATOR'))
+        message.channel.send('You have just overridden the previous score for this game.')
 
       if(!(resPlayers.some(x => x === player1.id) && resPlayers.some(x => x === player2.id)))
         throw `It seems like one of **@${player1.username}** or **@${player2.username}** isn't this in this game.\nMaybe you need more characters to find the right player or verify the players of this set with \`${process.env.PREFIX}set ${setId}\``
