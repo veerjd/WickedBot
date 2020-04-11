@@ -68,7 +68,7 @@ module.exports = {
       for (const [cat, commandsList] of Object.entries(categoriesMapped)) {
         const field = []
         for (const [name, details] of Object.entries(commandsList)) {
-          field.push(`**${name}**: ${details.description}`)
+          field.push(`**${name}**: ${details.usage}`)
         }
         if(field.length > 0)
           embed.addField(`**${cat}:**`, field)
