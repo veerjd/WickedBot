@@ -37,17 +37,17 @@ module.exports = {
     const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
 
-    const sql = 'INSERT INTO test_set (season, tribes, completed) VALUES ($1, $2, false) RETURNING id, season'
+    const sql = 'INSERT INTO set (season, tribes, completed) VALUES ($1, $2, false) RETURNING id, season'
     const values = [season, [tribeKeys[0], tribeKeys[1]]]
 
     const resSet = await db.query(sql, values)
 
-    const sql1 = 'INSERT INTO test_points (set_id, player_id, points) VALUES ($1, $2, 0)'
+    const sql1 = 'INSERT INTO points (set_id, player_id, points) VALUES ($1, $2, 0)'
     const values1 = [resSet.rows[0].id, player1.id]
 
     await db.query(sql1, values1)
 
-    const sql2 = 'INSERT INTO test_points (set_id, player_id, points) VALUES ($1, $2, 0)'
+    const sql2 = 'INSERT INTO points (set_id, player_id, points) VALUES ($1, $2, 0)'
     const values2 = [resSet.rows[0].id, player2.id]
 
     await db.query(sql2, values2)

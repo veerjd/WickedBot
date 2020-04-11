@@ -25,7 +25,7 @@ module.exports = {
     const player2_pts = parseInt(args[4])
 
     try {
-      const sqlget = 'SELECT * FROM test_set INNER JOIN test_points ON id = set_id WHERE id = $1'
+      const sqlget = 'SELECT * FROM set INNER JOIN points ON id = set_id WHERE id = $1'
       const valuesget = [setId]
       const ressel = await db.query(sqlget, valuesget)
       const resPlayers = [ ressel.rows[0].player_id, ressel.rows[1].player_id ]
@@ -37,17 +37,17 @@ module.exports = {
       if(!(resPlayers.some(x => x === player1.id) && resPlayers.some(x => x === player2.id)))
         throw `It seems like one of **@${player1.username}** or **@${player2.username}** isn't this in this game.\nMaybe you need more characters to find the right player or verify the players of this set with \`${process.env.PREFIX}set ${setId}\``
 
-      const sql1 = 'UPDATE test_points SET points = $1 WHERE set_id = $2 AND player_id = $3'
+      const sql1 = 'UPDATE points SET points = $1 WHERE set_id = $2 AND player_id = $3'
       const values1 = [player1_pts, setId, player1.id]
 
       await db.query(sql1, values1)
 
-      const sql2 = 'UPDATE test_points SET points = $1 WHERE set_id = $2 AND player_id = $3'
+      const sql2 = 'UPDATE points SET points = $1 WHERE set_id = $2 AND player_id = $3'
       const values2 = [player2_pts, setId, player2.id]
 
       await db.query(sql2, values2)
 
-      const sql = 'UPDATE test_set SET completed = true WHERE id = $1'
+      const sql = 'UPDATE set SET completed = true WHERE id = $1'
       const values = [ressel.rows[0].id]
       await db.query(sql, values)
 

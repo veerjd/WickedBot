@@ -15,19 +15,19 @@ module.exports = {
     const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
 
-    const sqlAgg = 'SELECT COUNT(id), SUM(points), player_id FROM test_set INNER JOIN test_points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id' // HAVING COUNT(id) >= 3'
+    const sqlAgg = 'SELECT COUNT(id), SUM(points), player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id HAVING COUNT(id) >= 3'
     const valuesAgg = [season]
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
-    // if(rowsAgg.length < 2)
-    //   throw `Looks like not enough players have enough games (3 needed) for a leaderboard to be generated yet for season ${season}`
+    if(rowsAgg.length < 2)
+      throw `Looks like not enough players have enough games (3 needed) for a leaderboard to be generated yet for season ${season}`
 
-    const sql = 'SELECT * FROM test_set WHERE completed = true AND season = $1 ORDER BY id'
+    const sql = 'SELECT * FROM set WHERE completed = true AND season = $1 ORDER BY id'
     const values = [season]
     const resSets = await db.query(sql, values)
     const sets = resSets.rows
 
-    const sqlpoints = 'SELECT * FROM test_points LEFT JOIN test_set ON set_id = id WHERE completed = true AND season = $1 ORDER BY set_id'
+    const sqlpoints = 'SELECT * FROM points LEFT JOIN set ON set_id = id WHERE completed = true AND season = $1 ORDER BY set_id'
     const valuespoints = [season]
     const resPoints = await db.query(sqlpoints, valuespoints)
     const points = resPoints.rows

@@ -15,7 +15,7 @@ module.exports = {
     if(!argsStr || isNaN(parseInt(argsStr)))
       throw 'You need to provide the set id.'
 
-    const sql = 'SELECT * FROM test_set WHERE id = $1 AND completed = false'
+    const sql = 'SELECT * FROM set WHERE id = $1 AND completed = false'
     const values = [parseInt(argsStr)]
     const { rows } = await db.query(sql, values)
     if(rows.length < 1)
@@ -27,7 +27,7 @@ module.exports = {
     const tribe1 = getTribe(tribeKeys[0], emojiCache)
     const tribe2 = getTribe(tribeKeys[1], emojiCache)
 
-    const sqlup = 'UPDATE test_set SET tribes = $1 WHERE id = $2'
+    const sqlup = 'UPDATE set SET tribes = $1 WHERE id = $2'
     const valuesup = [[tribeKeys[0], tribeKeys[1]], parseInt(argsStr)]
     await db.query(sqlup, valuesup)
 

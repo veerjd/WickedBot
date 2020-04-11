@@ -15,7 +15,7 @@ module.exports = {
     const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
 
-    const sql = 'SELECT * FROM test_set WHERE completed = false AND season = $1 ORDER BY id'
+    const sql = 'SELECT * FROM set WHERE completed = false AND season = $1 ORDER BY id'
     const values = [season]
     const resSets = await db.query(sql, values)
 

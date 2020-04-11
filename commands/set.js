@@ -13,7 +13,7 @@ module.exports = {
   execute: async function(message, argsStr, embed) {
     if(isNaN(parseInt(argsStr)))
       throw `This command requires an id.\n\nYou can find ids with \`${process.env.PREFIX}incomplete\``
-    const sql = 'SELECT * FROM test_set INNER JOIN test_points ON id = set_id WHERE set_id = $1'
+    const sql = 'SELECT * FROM set INNER JOIN points ON id = set_id WHERE set_id = $1'
     const values = [parseInt(argsStr)]
 
     const { rows } = await db.query(sql, values)
