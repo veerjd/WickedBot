@@ -42,12 +42,12 @@ module.exports = {
 
     const resSet = await db.query(sql, values)
 
-    const sql1 = 'INSERT INTO test_points (set_id, player_id, points) VALUES ($1, $2, 0)'
+    const sql1 = 'INSERT INTO test_points (set_id, player_id, points, bonus) VALUES ($1, $2, 0, 0)'
     const values1 = [resSet.rows[0].id, player1.id]
 
     await db.query(sql1, values1)
 
-    const sql2 = 'INSERT INTO test_points (set_id, player_id, points) VALUES ($1, $2, 0)'
+    const sql2 = 'INSERT INTO test_points (set_id, player_id, points, bonus) VALUES ($1, $2, 0, 0)'
     const values2 = [resSet.rows[0].id, player2.id]
 
     await db.query(sql2, values2)
