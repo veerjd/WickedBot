@@ -37,6 +37,10 @@ module.exports = {
       const playerSets = sets.filter(x => playerPoints.some(y => y.set_id === x.id))
       const opponentsPoints = points.filter(x => playerSets.some(y => y.id === x.set_id && x.player_id !== player.player_id))
 
+      player.wins = playerPoints.filter(x => x.result === 'win').length
+      player.losses = playerPoints.filter(x => x.result === 'loss').length
+      player.ties = playerPoints.filter(x => x.result === 'tie').length
+
       let sumOpponent = 0
       opponentsPoints.forEach(x => {
         sumOpponent = sumOpponent + x.points
@@ -53,14 +57,14 @@ module.exports = {
     }
     rowsAgg.sort(compare)
 
-    const tops = []
+    let index = 0
     rowsAgg.forEach(orderedPlayer => {
       const user = getUserById(message.guild, orderedPlayer.player_id)
-      tops.push(`${user} (${orderedPlayer.count}):  **${orderedPlayer.ratio}**`)
+      index = index + 1
+      embed.addField(`${index}. **${user.username}**`, `(${orderedPlayer.wins}/${orderedPlayer.losses}/${orderedPlayer.ties}): **${orderedPlayer.ratio}**\n`)
     })
 
     embed.setTitle(`Leaderboard for season ${season}`)
-      .setDescription(tops)
     return embed
   }
 };

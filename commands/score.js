@@ -21,9 +21,19 @@ module.exports = {
     const setId = args[0]
     const player1 = getUser(message.guild, args[1])
     const player2 = getUser(message.guild, args[3])
-    const player1_pts = parseInt(args[2])
-    const player2_pts = parseInt(args[4])
+    player1.score = parseInt(args[2])
+    player2.score = parseInt(args[4])
 
+    if(player1.score > player2.score) {
+      player1.result = 'win'
+      player2.result = 'loss'
+    } else if(player1.score < player2.score) {
+      player1.result = 'loss'
+      player2.result = 'win'
+    } else {
+      player1.result = 'tie'
+      player2.result = 'tie'
+    }
     try {
       const sqlget = 'SELECT * FROM set INNER JOIN points ON id = set_id WHERE id = $1'
       const valuesget = [setId]
@@ -37,13 +47,13 @@ module.exports = {
       if(!(resPlayers.some(x => x === player1.id) && resPlayers.some(x => x === player2.id)))
         throw `It seems like one of **@${player1.username}** or **@${player2.username}** isn't this in this game.\nMaybe you need more characters to find the right player or verify the players of this set with \`${process.env.PREFIX}set ${setId}\``
 
-      const sql1 = 'UPDATE points SET points = $1 WHERE set_id = $2 AND player_id = $3'
-      const values1 = [player1_pts, setId, player1.id]
+      const sql1 = 'UPDATE points SET points = $1, result = $2 WHERE set_id = $3 AND player_id = $4'
+      const values1 = [player1.score, player1.result, setId, player1.id]
 
       await db.query(sql1, values1)
 
-      const sql2 = 'UPDATE points SET points = $1 WHERE set_id = $2 AND player_id = $3'
-      const values2 = [player2_pts, setId, player2.id]
+      const sql2 = 'UPDATE points SET points = $1, result = $2 WHERE set_id = $3 AND player_id = $4'
+      const values2 = [player2.score, player2.result, setId, player2.id]
 
       await db.query(sql2, values2)
 
