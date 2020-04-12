@@ -45,7 +45,8 @@ module.exports = {
       opponentsPoints.forEach(x => {
         sumOpponent = sumOpponent + x.points
       })
-      player.ratio = (player.sum / sumOpponent).toFixed(2)
+
+      player.ratio = ((parseInt(player.sum) + playerPoints[0].bonus) / sumOpponent).toFixed(2)
     })
 
     function compare(a, b) {
