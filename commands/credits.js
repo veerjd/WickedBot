@@ -10,6 +10,7 @@ module.exports = {
   execute(message, argsStr, embed) {
     embed.setTitle('**WickedBender bot credits!**')
       .addField('Developer', 'jd (alphaSeahorse)')
+      .addField('Contributor', 'Unwise')
 
     return embed
   }
