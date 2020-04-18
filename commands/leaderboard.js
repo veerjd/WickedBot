@@ -15,7 +15,7 @@ module.exports = {
     const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
 
-    const sqlAgg = 'SELECT COUNT(id), SUM(points), player_id FROM test_set INNER JOIN test_points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id' // HAVING COUNT(id) >= 3'
+    const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(malus), player_id FROM test_set INNER JOIN test_points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id' // HAVING COUNT(id) >= 3'
     const valuesAgg = [season]
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows

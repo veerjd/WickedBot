@@ -25,10 +25,10 @@ module.exports = {
     const tribe2 = getTribe(rows[0].tribes[1], message.guild.emojis.cache)
 
 
-    if(rows[0].completed === true)
+    if(rows[0].completed === true) {
       embed.addField('Status:', 'Completed')
-        .addField('Players', `${player1}: ${rows[0].points}\n${player2}: ${rows[1].points}`)
-    else
+        .addField('Players', `${player1}: ${rows[0].points - rows[0].malus}${(rows[0].malus > 0) ? ` (*-${rows[0].malus}*)` : ''}\n${player2}: ${rows[1].points - rows[1].malus}${(rows[1].malus > 0) ? ` (*-${rows[1].malus}*)` : ''}`)
+    } else
       embed.addField('Status:', 'Incomplete')
         .addField('Players', `${player1}\n${player2}`)
     embed.setTitle(`Set ID: ${rows[0].id}`)

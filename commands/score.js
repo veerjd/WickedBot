@@ -1,5 +1,5 @@
 const db = require('../db/index')
-const { getUser } = require('../util/utils')
+const { getUser, getWinner } = require('../util/utils')
 const set = require('./set')
 
 module.exports = {
@@ -21,29 +21,19 @@ module.exports = {
     const setId = args[0]
     const player1 = getUser(message.guild, args[1])
     const player2 = getUser(message.guild, args[3])
-    player1.score = parseInt(args[2])
-    player2.score = parseInt(args[4])
+    player1.points = parseInt(args[2])
+    player2.points = parseInt(args[4])
+    player1.pointsWithMalus = player1.points
+    player2.pointsWithMalus = player2.points
 
-    if(player1.score > player2.score) {
-      player1.result = 'win'
-      player1.bonus = 1000
-      player2.result = 'loss'
-      player2.bonus = 500
-    } else if(player1.score < player2.score) {
-      player1.result = 'loss'
-      player1.bonus = 500
-      player2.result = 'win'
-      player2.bonus = 1000
-    } else {
-      player1.result = 'tie'
-      player1.bonus = 500
-      player2.result = 'tie'
-      player2.bonus = 500
-    }
+    getWinner(player1, player2)
+
     try {
       const sqlget = 'SELECT * FROM test_set INNER JOIN test_points ON id = set_id WHERE id = $1'
       const valuesget = [setId]
       const ressel = await db.query(sqlget, valuesget)
+      if(ressel.rows.length === 0)
+        throw 'Looks like there\'s not set this id'
       const resPlayers = [ ressel.rows[0].player_id, ressel.rows[1].player_id ]
       if(ressel.rows[0].completed && !message.member.hasPermission('MANAGE_GUILD' || 'ADMINISTRATOR'))
         throw 'Only moderators can override a score for a completed game.'
@@ -53,13 +43,13 @@ module.exports = {
       if(!(resPlayers.some(x => x === player1.id) && resPlayers.some(x => x === player2.id)))
         throw `It seems like one of **@${player1.username}** or **@${player2.username}** isn't this in this game.\nMaybe you need more characters to find the right player or verify the players of this set with \`${process.env.PREFIX}set ${setId}\``
 
-      const sql1 = 'UPDATE test_points SET points = $1, result = $2, bonus = $3 WHERE set_id = $4 AND player_id = $5'
-      const values1 = [player1.score, player1.result, player1.bonus, setId, player1.id]
+      const sql1 = 'UPDATE test_points SET points = $1, result = $2, bonus = $3, malus = 0 WHERE set_id = $4 AND player_id = $5'
+      const values1 = [player1.points, player1.result, player1.bonus, setId, player1.id]
 
       await db.query(sql1, values1)
 
-      const sql2 = 'UPDATE test_points SET points = $1, result = $2, bonus = $3 WHERE set_id = $4 AND player_id = $5'
-      const values2 = [player2.score, player2.result, player2.bonus, setId, player2.id]
+      const sql2 = 'UPDATE test_points SET points = $1, result = $2, bonus = $3, malus = 0 WHERE set_id = $4 AND player_id = $5'
+      const values2 = [player2.points, player2.result, player2.bonus, setId, player2.id]
 
       await db.query(sql2, values2)
 
