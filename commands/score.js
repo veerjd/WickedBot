@@ -23,6 +23,22 @@ module.exports = {
     const player2 = getUser(message.guild, args[3])
     player1.points = parseInt(args[2])
     player2.points = parseInt(args[4])
+    if(player1.points > 20000) {
+      message.channel.send('Maximum points for a player in a set is 20000.')
+      player1.points = 20000
+    }
+    if(player2.points > 20000) {
+      message.channel.send('Maximum points for a player in a set is 20000.')
+      player2.points = 20000
+    }
+    if(player1.points < 6000) {
+      message.channel.send('Minimum points for a player in a set is 6000.')
+      player1.points = 6000
+    }
+    if(player2.points < 6000) {
+      message.channel.send('Minimum points for a player in a set is 6000.')
+      player2.points = 6000
+    }
     player1.pointsWithMalus = player1.points
     player2.pointsWithMalus = player2.points
 
