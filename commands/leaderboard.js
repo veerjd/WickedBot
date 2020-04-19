@@ -15,7 +15,7 @@ module.exports = {
     const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
 
-    const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(malus), player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id' // HAVING COUNT(id) >= 3'
+    const sqlAgg = 'SELECT COUNT(id), SUM(points) AS points, SUM(bonus) AS bonus, SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id' // HAVING COUNT(id) >= 3'
     const valuesAgg = [season]
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
@@ -46,7 +46,7 @@ module.exports = {
         sumOpponent = sumOpponent + x.points
       })
 
-      player.ratio = ((parseInt(player.sum) + playerPoints[0].bonus) / sumOpponent).toFixed(2)
+      player.ratio = ((parseInt(player.points) + parseInt(player.bonus) - parseInt(player.malus)) / sumOpponent).toFixed(2)
     })
 
     function compare(a, b) {
