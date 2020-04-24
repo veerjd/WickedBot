@@ -1,4 +1,5 @@
 const tribes = require('./tribes')
+const db = require('../db/index')
 
 module.exports.getUserById = function(guild, id) {
   const user = guild.members.cache.filter(x => x.user.id === id)
@@ -61,11 +62,9 @@ player = {
 }
 */
 module.exports.getWinner = function(player1, player2) {
-  console.log(player1.pointsWithMalus, player2.pointsWithMalus)
   if(player1.pointsWithMalus > player2.pointsWithMalus) {
     player1.bonus = 1000
     player2.bonus = 500
-    console.log(player1.pointsWithMalus + player1.bonus, player2.pointsWithMalus + player1.bonus)
     if(player1.pointsWithMalus + player1.bonus > player2.pointsWithMalus + player2.bonus) {
       player1.result = 'win'
       player2.result = 'loss'
@@ -76,7 +75,6 @@ module.exports.getWinner = function(player1, player2) {
   } else if(player1.pointsWithMalus < player2.pointsWithMalus) {
     player1.bonus = 500
     player2.bonus = 1000
-    console.log(player1.pointsWithMalus + player1.bonus, player2.pointsWithMalus + player1.bonus)
     if(player1.pointsWithMalus + player1.bonus > player2.pointsWithMalus + player2.bonus) {
       player1.result = 'loss'
       player2.result = 'win'
@@ -90,4 +88,27 @@ module.exports.getWinner = function(player1, player2) {
     player2.result = 'tie'
     player2.bonus = 500
   }
+}
+
+module.exports.getSeasonRole = async function(rolesManager) {
+  // return new Promise((resolve, reject) => {
+  const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
+  const resSeason = await db.query(sqlseason)
+  const season = resSeason.rows[0].season
+  const roleName = `Season ${season}`
+  const roleExists = rolesManager.cache.some(role => role.name.startsWith(roleName))
+
+  if(roleExists)
+    return rolesManager.cache.find(role => role.name.startsWith(roleName))
+  else {
+    try {
+      const role = await rolesManager.create({ data:{
+        name: roleName,
+        color: '#CCCCCC',
+        permissions: 18433
+      } })
+      return role
+    } catch (error) {throw error}
+  }
+  // })
 }

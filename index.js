@@ -47,7 +47,7 @@ bot.on('message', async message => {
   const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
   // Return if the command doesn't exist
-  if (!command)
+  if (!command || command.permsAllowed === undefined)
     return
 
   if(!(command.permsAllowed.some(x => message.member.hasPermission(x)) || command.usersAllowed.some(x => x === message.author.id)))

@@ -1,5 +1,5 @@
 const db = require('../db/index')
-const { getUser, getTribe, getRandomTribes } = require('../util/utils')
+const { getUser, getTribe, getRandomTribes, getSeasonRole } = require('../util/utils')
 
 module.exports = {
   name: 'newset',
@@ -36,6 +36,10 @@ module.exports = {
     const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
     const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
+
+    const seasonRole = getSeasonRole(message.guild.roles)
+    if(!message.member.roles.cache.has(seasonRole))
+      throw `You need to signup for **${seasonRole.name}** before you can create a set.\nYou can do that with a simple \`${process.env.PREFIX}signup\`!`
 
     const sql = 'INSERT INTO set (season, tribes, completed) VALUES ($1, $2, false) RETURNING id, season'
     const values = [season, [tribeKeys[0], tribeKeys[1]]]

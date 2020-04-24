@@ -7,7 +7,7 @@ module.exports = {
   description: 'set points penalty for infractions',
   aliases: ['malus'],
   usage(prefix) {
-    return `\`${prefix}malus flash 25 1000\``
+    return `\`${prefix}penalty flash 25 1000\``
   },
   category: 'Staff',
   permsAllowed: ['VIEW_CHANNEL'],

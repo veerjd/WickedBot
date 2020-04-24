@@ -28,6 +28,7 @@ module.exports = {
       }
     } else {
       const categoriesMapped = {
+        Signup: {},
         Main: {},
         Staff: {}
       }
