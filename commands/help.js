@@ -34,7 +34,7 @@ module.exports = {
         throw `This command doesn't exist.\nGo get some \`${process.env.PREFIX}help\`!`
       else {
         embed.setTitle(`Help card for \`${command.name}\``)
-          .setDescription('Description:', command.description)
+          .setDescription(`Description: ${command.description}`)
           .addField('Usage:', command.usage(process.env.PREFIX))
         if(command.aliases.length > 0)
           embed.addField((command.aliases.length === 1) ? 'Alias:' : 'Aliases', '`' + command.aliases.join('`, `') + '`')
@@ -42,6 +42,7 @@ module.exports = {
       }
     } else {
       const categoriesMapped = {
+        Signup: {},
         Main: {},
         Staff: {}
       }
