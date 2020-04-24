@@ -5,7 +5,7 @@ module.exports = {
   usage(prefix) {
     return `\`${prefix}help\``
   },
-  category: 'hidden',
+  category: 'Basic',
   permsAllowed: ['VIEW_CHANNEL'],
   execute(message, argsStr, embed) {
 
@@ -35,7 +35,7 @@ module.exports = {
       }
 
       commands.forEach(cmd => {
-        if(cmd.category === 'hidden')
+        if(cmd.category === 'hidden' || cmd.name === 'help')
           return
         if(!cmd.permsAllowed.some(x => message.member.hasPermission(x)))
           return
