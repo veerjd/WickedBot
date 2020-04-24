@@ -42,6 +42,7 @@ module.exports = {
       }
     } else {
       const categoriesMapped = {
+        Basic: {},
         Signup: {},
         Main: {},
         Staff: {}

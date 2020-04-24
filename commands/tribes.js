@@ -7,7 +7,7 @@ module.exports = {
   usage(prefix) {
     return `\`${prefix}tribes\``
   },
-  category: 'Main',
+  category: 'Basic',
   permsAllowed: ['VIEW_CHANNEL'],
   execute: async function(message, argsStr, embed) {
     const tribeKeys = getRandomTribes(message.guild.emojis.cache)

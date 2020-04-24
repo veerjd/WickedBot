@@ -8,7 +8,7 @@ module.exports = {
   usage(prefix) {
     return `\`${prefix}code [alphaseahorse]\``
   },
-  category: 'Signup',
+  category: 'Basic',
   permsAllowed: ['VIEW_CHANNEL'],
   execute: async function(message, argsStr) {
 
