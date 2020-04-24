@@ -53,8 +53,11 @@ bot.on('message', async message => {
   const wickedbot = message.guild.channels.cache.get('696894142625742905')
   const traininggrounds = message.guild.channels.cache.get('701896459028660275')
   const adminbot = message.guild.channels.cache.get('702447004105703424')
-  if(!(message.channel.id === wickedbot.id || message.channel.id === traininggrounds.id || message.channel.id === adminbot.id))
-    return message.channel.send(`You need to use ${wickedbot}, ${traininggrounds} or ${adminbot} to use me`)
+  if(!(message.channel.id === wickedbot.id || message.channel.id === traininggrounds.id || message.channel.id === adminbot.id) && command.category !== 'Basic')
+    return message.channel.send(`You need to be in ${wickedbot}, ${traininggrounds} or ${adminbot} to this command of mine.`)
+
+  if(message.member.roles.cache.size < 1 && command.category !== 'Basic')
+    throw 'You need a player role to use the bot. Do a practice set then contact the Mods. Good luck!'
 
   if(!(command.permsAllowed.some(x => message.member.hasPermission(x)) || command.usersAllowed.some(x => x === message.author.id)))
     return message.channel.send('Only an admin can use this command, sorry!')
