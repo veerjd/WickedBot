@@ -25,6 +25,24 @@ module.exports.getUser = function(guild, name) {
   return user.first().user
 }
 
+module.exports.getMember = function(guild, name) {
+  const user = guild.members.cache.filter(x => {
+    let found
+
+    if(x.nickname) {
+      found = x.nickname.toLowerCase().includes(name.toLowerCase()) || x.user.username.toLowerCase().includes(name.toLowerCase())
+    } else {
+      found = x.user.username.toLowerCase().includes(name.toLowerCase())
+    }
+
+    return found
+  })
+
+  if(user.size === 0)
+    throw `There is no players matching **${name}**... ¯\\_(ツ)_/¯`
+  return user.first()
+}
+
 module.exports.getTribe = function(tribeCode, emojis) {
   const tribe = tribes[tribeCode.toUpperCase()]
 
@@ -94,6 +112,7 @@ module.exports.getSeasonRole = async function(rolesManager) {
   // return new Promise((resolve, reject) => {
   const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
   const resSeason = await db.query(sqlseason)
+
   const season = resSeason.rows[0].season
   const roleName = `Season ${season}`
   const roleExists = rolesManager.cache.some(role => role.name.startsWith(roleName))

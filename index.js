@@ -47,8 +47,14 @@ bot.on('message', async message => {
   const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
   // Return if the command doesn't exist
-  if (!command || command.permsAllowed === undefined)
+  if(!command || command.permsAllowed === undefined)
     return
+
+  const wickedbot = message.guild.channels.cache.get('696894142625742905')
+  const traininggrounds = message.guild.channels.cache.get('701896459028660275')
+  const adminbot = message.guild.channels.cache.get('702447004105703424')
+  if(!(message.channel.id === wickedbot.id || message.channel.id === traininggrounds.id || message.channel.id === adminbot.id))
+    return message.channel.send(`You need to use ${wickedbot}, ${traininggrounds} or ${adminbot} to use me`)
 
   if(!(command.permsAllowed.some(x => message.member.hasPermission(x)) || command.usersAllowed.some(x => x === message.author.id)))
     return message.channel.send('Only an admin can use this command, sorry!')
