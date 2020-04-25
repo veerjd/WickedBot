@@ -59,7 +59,7 @@ bot.on('message', async message => {
   if(message.member.roles.cache.size < 1 && command.category !== 'Basic')
     throw 'You need a player role to use the bot. Do a practice set then contact the Mods. Good luck!'
 
-  if(!(command.permsAllowed.some(x => message.member.hasPermission(x)) || command.usersAllowed.some(x => x === message.author.id)))
+  if(!(command.permsAllowed.some(x => message.member.hasPermission(x))))
     return message.channel.send('Only an admin can use this command, sorry!')
 
   // Instantiate the embed that's sent to every command execution
