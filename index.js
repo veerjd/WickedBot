@@ -57,9 +57,9 @@ bot.on('message', async message => {
     return message.channel.send(`You need to be in ${wickedbot}, ${traininggrounds} or ${adminbot} to this command of mine.`)
 
   if(message.member.roles.cache.size < 1 && command.category !== 'Basic')
-    throw 'You need a player role to use the bot. Do a practice set then contact the Mods. Good luck!'
+    return message.channel.send('You need a player role to use the bot. Do a practice set then contact the Mods. Good luck!')
 
-  if(!(command.permsAllowed.some(x => message.member.hasPermission(x))))
+  if(command.category === 'Staff' && command.permsAllowed.some(x => message.member.hasPermission(x)))
     return message.channel.send('Only an admin can use this command, sorry!')
 
   // Instantiate the embed that's sent to every command execution
@@ -79,6 +79,10 @@ bot.on('message', async message => {
     return message.channel.send(`${error}`)
       .then().catch(console.error)
   }
+})
+
+bot.on('error', error => {
+  console.error('ERROR', error)
 })
 
 bot.login(process.env.TOKEN);
