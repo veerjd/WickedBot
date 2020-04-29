@@ -32,6 +32,6 @@ module.exports = {
       throw `There doesn't seem to be a code registered with me for ${me ? `you:\nYou can set your own code with \`${process.env.PREFIX}setcode YOURCODE\`` : `**${user.username}**'s code.\nUnfortunately, as of right now, only ${user} can set his own code (with \`${process.env.PREFIX}setcode YOURCODE\`)`}`
 
     message.channel.send(`Here is **${user.username}**'s code:`)
-    return `\`${rows[0].code}\``
+    return `${rows[0].code}`
   }
 };

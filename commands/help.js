@@ -37,7 +37,7 @@ module.exports = {
       commands.forEach(cmd => {
         if(cmd.category === 'hidden' || cmd.name === 'help')
           return
-        if(!cmd.permsAllowed.some(x => message.member.hasPermission(x)))
+        if(!cmd.permsAllowed.some(x => message.member.hasPermission(x)) && command.category !== 'Basic')
           return
 
         const category = categoriesMapped[cmd.category]
