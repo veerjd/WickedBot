@@ -35,7 +35,6 @@ module.exports = {
       }
 
       commands.forEach(cmd => {
-        console.log('cmd:', cmd.name)
         if(cmd.category === 'hidden' || cmd.name === 'help')
           return
         if(!cmd.permsAllowed.some(x => message.member.hasPermission(x)) && cmd.category !== 'Basic')
