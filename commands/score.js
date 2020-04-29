@@ -5,7 +5,7 @@ const set = require('./set')
 module.exports = {
   name: 'score',
   description: 'declare score for set',
-  aliases: ['sc'],
+  aliases: ['sc', 'scores'],
   usage(prefix) {
     return `\`${prefix}score 25 player1 11000 player2 12000\``
   },

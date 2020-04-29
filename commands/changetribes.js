@@ -6,7 +6,7 @@ const tribes = require('../util/tribes')
 module.exports = {
   name: 'changetribes',
   description: 'change tribes for a game id',
-  aliases: ['change', 'settribe'],
+  aliases: ['change', 'settribe', 'changetribe'],
   usage(prefix) {
     return `\`${prefix}changetribes 25 QvO\``
   },
