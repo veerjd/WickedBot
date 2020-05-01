@@ -53,7 +53,8 @@ bot.on('message', async message => {
   const wickedbot = message.guild.channels.cache.get('696894142625742905')
   const traininggrounds = message.guild.channels.cache.get('701896459028660275')
   const adminbot = message.guild.channels.cache.get('702447004105703424')
-  if(!(message.channel.id === wickedbot.id || message.channel.id === traininggrounds.id || message.channel.id === adminbot.id) && command.category !== 'Basic')
+  const matchmaking = message.guild.channels.cache.get('558364419139043363')
+  if(!(message.channel.id === wickedbot.id || message.channel.id === traininggrounds.id || message.channel.id === adminbot.id || message.channel.id === matchmaking.id) && command.category !== 'Basic')
     return message.channel.send(`You need to be in ${wickedbot}, ${traininggrounds} or ${adminbot} to this command of mine.`)
 
   if(message.member.roles.cache.size < 1 && command.category !== 'Basic')
