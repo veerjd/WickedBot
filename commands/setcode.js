@@ -37,6 +37,6 @@ module.exports = {
     }
 
     message.channel.send(`You just ${!ressel.rows[0] ? 'set' : 'updated'} your code to:`)
-    return `\`${res.rows[0].code}\``
+    return `${res.rows[0].code}`
   }
 };
