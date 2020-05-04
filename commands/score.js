@@ -59,6 +59,8 @@ module.exports = {
       if(!(resPlayers.some(x => x === player1.id) && resPlayers.some(x => x === player2.id)))
         throw `It seems like one of **@${player1.username}** or **@${player2.username}** isn't this in this game.\nMaybe you need more characters to find the right player or verify the players of this set with \`${process.env.PREFIX}set ${setId}\``
 
+      message.channel.send(`Here is the score for set ${setId} opposing ${player1} & ${player2}`)
+
       const sql1 = 'UPDATE test_points SET points = $1, result = $2, bonus = $3, malus = 0 WHERE set_id = $4 AND player_id = $5'
       const values1 = [player1.points, player1.result, player1.bonus, setId, player1.id]
 
