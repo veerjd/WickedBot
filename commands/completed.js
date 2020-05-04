@@ -61,7 +61,7 @@ module.exports = {
       })
 
       if(sets.length === 0)
-        return embed.setTitle((argsStr) ? `There are no completed games for ${user} during season ${season}` : `You have no completed games for season ${season}`)
+        return embed.setDescription((argsStr) ? `There are no completed games for ${user} during season ${season}` : `You have no completed games for season ${season}`)
 
       setDesc.push(`**All completed games for ${user} during season ${season}**`)
     }
