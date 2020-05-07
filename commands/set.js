@@ -18,7 +18,7 @@ module.exports = {
 
     const { rows } = await db.query(sql, values)
     if(!rows[0])
-      throw 'There doesn\'t seem to be a game with that ID.\nYou can see your incomplete games with `$incomplete`!'
+      throw 'There doesn\'t seem to be a game with that ID.\nYou can see your incomplete sets with `$incomplete`!'
     const player1 = message.client.users.cache.get(rows[0].player_id)
     const player2 = message.client.users.cache.get(rows[1].player_id)
     const tribe1 = getTribe(rows[0].tribes[0], message.guild.emojis.cache)

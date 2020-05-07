@@ -83,23 +83,13 @@ module.exports.getWinner = function(player1, player2) {
   if(player1.pointsWithMalus > player2.pointsWithMalus) {
     player1.bonus = 1000
     player2.bonus = 500
-    if(player1.pointsWithMalus + player1.bonus > player2.pointsWithMalus + player2.bonus) {
-      player1.result = 'win'
-      player2.result = 'loss'
-    } else {
-      player2.result = 'win'
-      player1.result = 'loss'
-    }
+    player1.result = 'win'
+    player2.result = 'loss'
   } else if(player1.pointsWithMalus < player2.pointsWithMalus) {
     player1.bonus = 500
     player2.bonus = 1000
-    if(player1.pointsWithMalus + player1.bonus > player2.pointsWithMalus + player2.bonus) {
-      player1.result = 'loss'
-      player2.result = 'win'
-    } else {
-      player2.result = 'loss'
-      player1.result = 'win'
-    }
+    player1.result = 'loss'
+    player2.result = 'win'
   } else {
     player1.result = 'tie'
     player1.bonus = 500
