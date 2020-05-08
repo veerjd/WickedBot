@@ -33,7 +33,6 @@ module.exports = {
     const points = resPoints.rows
 
     rowsAgg.forEach(player => {
-      message.channel.send(JSON.stringify(player))
       const playerPoints = points.filter(x => x.player_id === player.player_id)
       const playerSets = sets.filter(x => playerPoints.some(y => y.set_id === x.id))
       const opponentsPoints = points.filter(x => playerSets.some(y => y.id === x.set_id && x.player_id !== player.player_id))
