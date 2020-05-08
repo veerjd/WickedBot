@@ -20,7 +20,7 @@ module.exports = {
     const resSets = await db.query(sql, values)
 
     if(resSets.rows.length > 0)
-      throw `There are still ${resSets.rows.length} incomplete games for season ${season}.\nYou can get all of them with \`${process.env.PREFIX}incomplete\` and mark them as completed with \`${process.env.PREFIX}score\`.`
+      throw `There are still ${resSets.rows.length} incomplete sets for season ${season}.\nYou can get all of them with \`${process.env.PREFIX}incomplete all\` and mark them as completed with \`${process.env.PREFIX}score\`.`
 
     const today = new Date().toLocaleDateString()
 

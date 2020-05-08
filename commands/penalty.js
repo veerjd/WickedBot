@@ -1,5 +1,5 @@
 const db = require('../db/index')
-const { getUser, getWinner } = require('../util/utils')
+const { getUser, getWinner, getUserById } = require('../util/utils')
 const set = require('./set')
 
 module.exports = {
@@ -25,9 +25,13 @@ module.exports = {
     const sqlc = 'SELECT completed FROM set WHERE id = $1'
     const valuesc = [setId]
     const resc = await db.query(sqlc, valuesc)
-    const completed = resc.rows[0].completed
-    if(!completed)
-      throw 'As of right now, I only support inputting penalty after the set is over by using `$score`\nTry `$help score` if you aren\'t sure how to use it'
+    let completed
+    if(resc.rows[0])
+      completed = resc.rows[0].completed
+    else
+      throw 'Seems like I had a problem finding this set...'
+    // if(!completed)
+    //   throw 'As of right now, I only support inputting penalty after the set is over by using `$score`\nTry `$help score` if you aren\'t sure how to use it'
 
     const sqlp = 'SELECT * FROM points WHERE set_id = $1'
     const valuesp = [setId]
@@ -39,12 +43,18 @@ module.exports = {
       player1.malus = malus
       player1.pointsWithMalus = player1.points - player1.malus
       player2.pointsWithMalus = player2.points - player2.malus
-      getWinner(player1, player2)
+      const user1 = getUserById(message.guild, player1.player_id)
+      message.channel.send(`${(malus === 0) ? `Penalty reset for ${user1}` : `${user1} violated the rules and so gets a **${malus}** point penalty that'll reflect in the set score\n**Do not subtract this number when you set the score with the \`${process.env.PREFIX}score\` command after the set!**`}`)
+      if(completed)
+        getWinner(player1, player2)
     } else if (playerInput.id === player2.player_id) {
       player2.malus = malus
       player1.pointsWithMalus = player1.points - player1.malus
       player2.pointsWithMalus = player2.points - player2.malus
-      getWinner(player1, player2)
+      const user2 = getUserById(message.guild, player2.player_id)
+      message.channel.send(`${(malus === 0) ? `Penalty reset for ${user2}` : `${user2} violated the rules and so gets a **${malus}** point penalty that'll reflect in the set score\n**Do not subtract this number when you set the score with the \`${process.env.PREFIX}score\` command after the set!**`}`)
+      if(completed)
+        getWinner(player1, player2)
     } else
       throw 'The specified player isn\'t in this set...'
 

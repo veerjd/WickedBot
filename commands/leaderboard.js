@@ -15,7 +15,7 @@ module.exports = {
     const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
 
-    const sqlAgg = 'SELECT COUNT(id), SUM(points) AS points, SUM(bonus) AS bonus, SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id' // HAVING COUNT(id) >= 3'
+    const sqlAgg = 'SELECT COUNT(id), SUM(points) AS sum, SUM(bonus) AS bonus, SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id' // HAVING COUNT(id) >= 3'
     const valuesAgg = [season]
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
@@ -33,6 +33,7 @@ module.exports = {
     const points = resPoints.rows
 
     rowsAgg.forEach(player => {
+      message.channel.send(JSON.stringify(player))
       const playerPoints = points.filter(x => x.player_id === player.player_id)
       const playerSets = sets.filter(x => playerPoints.some(y => y.set_id === x.id))
       const opponentsPoints = points.filter(x => playerSets.some(y => y.id === x.set_id && x.player_id !== player.player_id))
@@ -43,10 +44,10 @@ module.exports = {
 
       let sumOpponent = 0
       opponentsPoints.forEach(x => {
-        sumOpponent = sumOpponent + x.points
+        sumOpponent = sumOpponent + parseInt(x.points)
       })
 
-      player.ratio = ((parseInt(player.points) + parseInt(player.bonus) - parseInt(player.malus)) / sumOpponent).toFixed(2)
+      player.ratio = Number(((parseInt(player.sum) + parseInt(player.bonus) - parseInt(player.malus)) / sumOpponent).toFixed(2))
     })
 
     function compare(a, b) {

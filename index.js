@@ -19,7 +19,7 @@ for (const file of commandFiles) {
 // --------------------------------------
 bot.on('ready', () => {
   // eslint-disable-next-line no-console
-  console.log(`Logged in as ${bot.user.username}`);
+  console.log(`Logged in as ${bot.user.username} ${process.env.PREFIX}`);
 
   bot.user.setActivity(`${prefix}help`, { type: 'PLAYING' })
 });

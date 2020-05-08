@@ -2,11 +2,11 @@ const db = require('../db/index')
 const { getTribe, getUser } = require('../util/utils')
 
 module.exports = {
-  name: 'incomplete',
-  description: 'incomplete sets for current season',
+  name: 'sets',
+  description: 'all sets for current season',
   aliases: ['in', 'i'],
   usage(prefix) {
-    return `\`${prefix}incomplete [all OR player]\``
+    return `\`${prefix}sets [all OR player]\``
   },
   category: 'Main',
   permsAllowed: ['VIEW_CHANNEL'],
@@ -17,12 +17,12 @@ module.exports = {
     const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
 
-    const sql = 'SELECT * FROM set WHERE completed = false AND season = $1 ORDER BY id'
+    const sql = 'SELECT * FROM set WHERE season = $1 ORDER BY id'
     const values = [season]
     const resSets = await db.query(sql, values)
     let sets = resSets.rows
 
-    const sqlusers = 'SELECT * FROM points LEFT JOIN set ON set_id = id WHERE completed = false AND season = $1 ORDER BY set_id'
+    const sqlusers = 'SELECT * FROM points LEFT JOIN set ON set_id = id WHERE season = $1 ORDER BY set_id'
     const valuesusers = [season]
     const resPoints = await db.query(sqlusers, valuesusers)
     let points = resPoints.rows
@@ -36,9 +36,9 @@ module.exports = {
       })
 
       if(sets.length === 0)
-        return embed.setDescription(`There are no incomplete sets yet for season ${season}`)
+        return embed.setDescription(`There are no sets yet for season ${season}`)
 
-      setDesc.push(`**All ${sets.length} incomplete sets for season ${season}**`)
+      setDesc.push(`**All ${sets.length} sets for season ${season}**`)
 
     } else {
       const mention = message.mentions.users.first()
@@ -61,9 +61,9 @@ module.exports = {
       })
 
       if(sets.length === 0)
-        return embed.setDescription((argsStr) ? `There are no incomplete sets for ${user} during season ${season}` : `You have no incomplete sets for season ${season}`)
+        return embed.setTitle((argsStr) ? `There are no sets for ${user} during season ${season}` : `You have no sets for season ${season}`)
 
-      setDesc.push(`**All ${sets.length} incomplete sets for ${user} during season ${season}**`)
+      setDesc.push(`**All sets for ${user} during season ${season}**`)
     }
     setDesc.push('')
 

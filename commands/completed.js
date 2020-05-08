@@ -36,9 +36,9 @@ module.exports = {
       })
 
       if(sets.length === 0)
-        return embed.setDescription(`There are no incomplete games yet for season ${season}`)
+        return embed.setDescription(`There are no incomplete sets yet for season ${season}`)
 
-      setDesc.push(`**All completed games for season ${season}**`)
+      setDesc.push(`**All ${sets.length} completed games for season ${season}**`)
 
     } else {
       const mention = message.mentions.users.first()
@@ -63,7 +63,7 @@ module.exports = {
       if(sets.length === 0)
         return embed.setDescription((argsStr) ? `There are no completed games for ${user} during season ${season}` : `You have no completed games for season ${season}`)
 
-      setDesc.push(`**All completed games for ${user} during season ${season}**`)
+      setDesc.push(`**All ${sets.length} completed games for ${user} during season ${season}**`)
     }
     setDesc.push('')
 

@@ -39,8 +39,22 @@ module.exports = {
       message.channel.send('Minimum points for a player in a set is 6000.')
       player2.points = 6000
     }
-    player1.pointsWithMalus = player1.points
-    player2.pointsWithMalus = player2.points
+    const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
+    const resSeason = await db.query(sqlseason)
+    const season = resSeason.rows[0].season
+
+    const sql1Malus = 'SELECT SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND player_id = $2 AND set_id = $3 GROUP BY player_id'
+    const values1Malus = [season, player1.id, setId]
+    const player1Malus = await db.query(sql1Malus, values1Malus)
+    player1.malus = parseInt(player1Malus.rows[0].malus)
+
+    const sql2Malus = 'SELECT SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND player_id = $2 AND set_id = $3 GROUP BY player_id'
+    const values2Malus = [season, player2.id, setId]
+    const player2Malus = await db.query(sql2Malus, values2Malus)
+    player2.malus = parseInt(player2Malus.rows[0].malus)
+
+    player1.pointsWithMalus = player1.points - player1.malus
+    player2.pointsWithMalus = player2.points - player2.malus
 
     getWinner(player1, player2)
 
@@ -61,12 +75,12 @@ module.exports = {
 
       message.channel.send(`Here is the score for set ${setId} opposing ${player1} & ${player2}`)
 
-      const sql1 = 'UPDATE points SET points = $1, result = $2, bonus = $3, malus = 0 WHERE set_id = $4 AND player_id = $5'
+      const sql1 = 'UPDATE points SET points = $1, result = $2, bonus = $3 WHERE set_id = $4 AND player_id = $5'
       const values1 = [player1.points, player1.result, player1.bonus, setId, player1.id]
 
       await db.query(sql1, values1)
 
-      const sql2 = 'UPDATE points SET points = $1, result = $2, bonus = $3, malus = 0 WHERE set_id = $4 AND player_id = $5'
+      const sql2 = 'UPDATE points SET points = $1, result = $2, bonus = $3 WHERE set_id = $4 AND player_id = $5'
       const values2 = [player2.points, player2.result, player2.bonus, setId, player2.id]
 
       await db.query(sql2, values2)
