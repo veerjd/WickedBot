@@ -43,7 +43,7 @@ module.exports = {
 
       let sumOpponent = 0
       opponentsPoints.forEach(x => {
-        sumOpponent = sumOpponent + parseInt(x.points)
+        sumOpponent = sumOpponent + x.points - x.malus
       })
 
       player.ratio = Number(((parseInt(player.sum) + parseInt(player.bonus) - parseInt(player.malus)) / sumOpponent).toFixed(2))
