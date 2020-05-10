@@ -28,18 +28,14 @@ module.exports = {
     let points = resPoints.rows
 
     if(argsStr.includes('all')) {
-
-      sets.forEach(set => {
-        const setPoints = points.filter(x => x.set_id === set.id)
-        set.player1 = setPoints[0].player_id
-        set.player2 = setPoints[1].player_id
-      })
-
       if(sets.length === 0)
         return embed.setDescription(`There are no sets yet for season ${season}`)
 
-      setDesc.push(`**All ${sets.length} sets for season ${season}**`)
+      const incompletes = sets.filter(x => x.completed === false)
+      const completes = sets.filter(x => x.completed === true)
 
+      embed.setTitle(`There are ${sets.length} total games for season ${season}.\n${incompletes.length} incompletes and ${completes.length} completed.`)
+        .setDescription(`You can use \`${process.env.PREFIX}incomplete all\` and \`${process.env.PREFIX}completed all\` to see the sets' details!`)
     } else {
       const mention = message.mentions.users.first()
       let user
@@ -52,8 +48,11 @@ module.exports = {
 
       const userPoints = points.filter(x => x.player_id === user.id)
       sets = sets.filter(x => userPoints.some(y => y.set_id === x.id))
+      const incompletes = sets.filter(x => x.completed === false)
+      const completes = sets.filter(x => x.completed === true)
       points = points.filter(x => sets.some(y => y.id === x.set_id))
 
+      embed.setTitle(`There are ${sets.length} total games for season ${season}.\n${incompletes.length} incompletes and ${completes.length} completed.`)
       sets.forEach(set => {
         const setPoints = points.filter(x => x.set_id === set.id)
         set.player1 = setPoints[0].player_id
@@ -64,20 +63,20 @@ module.exports = {
         return embed.setTitle((argsStr) ? `There are no sets for ${user} during season ${season}` : `You have no sets for season ${season}`)
 
       setDesc.push(`**All sets for ${user} during season ${season}**`)
-    }
-    setDesc.push('')
-
-    sets.forEach(x => {
-      const player1 = message.client.users.cache.get(x.player1)
-      const player2 = message.client.users.cache.get(x.player2)
-      const tribe1 = getTribe(x.tribes[0], message.guild.emojis.cache)
-      const tribe2 = getTribe(x.tribes[1], message.guild.emojis.cache)
-      // if()
-      setDesc.push(`${x.id}: ${player1} & ${player2}`)
-      setDesc.push(`${tribe1} & ${tribe2}`)
       setDesc.push('')
-    })
-    embed.setDescription(setDesc)
+      sets.forEach(x => {
+        const player1 = message.client.users.cache.get(x.player1)
+        const player2 = message.client.users.cache.get(x.player2)
+        const tribe1 = getTribe(x.tribes[0], message.guild.emojis.cache)
+        const tribe2 = getTribe(x.tribes[1], message.guild.emojis.cache)
+        setDesc.push(`${x.id}: ${player1} & ${player2}`)
+        setDesc.push(`${tribe1} & ${tribe2}`)
+        setDesc.push('')
+      })
+
+      embed.setDescription(setDesc)
+    }
+
     return embed
   }
 };
