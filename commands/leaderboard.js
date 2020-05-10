@@ -3,7 +3,7 @@ const { getUserById } = require('../util/utils')
 
 module.exports = {
   name: 'leaderboard',
-  description: 'show season leaderboard',
+  description: 'show season leaderboard for players with 2 completed sets or more',
   aliases: ['lb'],
   usage(prefix) {
     return `\`${prefix}lb\``
