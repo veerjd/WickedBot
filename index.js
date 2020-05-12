@@ -3,6 +3,7 @@ const { Client, MessageEmbed, Collection } = require('discord.js');
 const bot = new Client();
 const fs = require('fs')
 const prefix = process.env.PREFIX
+const db = require('./db/index')
 
 // bot.commands as a collection(Map) of commands from ./commands
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -80,6 +81,27 @@ bot.on('message', async message => {
     return message.channel.send(`${error}`)
       .then().catch(console.error)
   }
+})
+
+bot.on('guildMemberUpdate', async (oldMember, newMember) => {
+  if(oldMember.roles.cache.size >= newMember.roles.cache.size)
+    return
+
+  const newRoles = newMember.roles.cache
+  newRoles.forEach((role, id) => {
+    if(oldMember.roles.cache.has(id))
+      newRoles.delete(id)
+  })
+
+  const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
+  const resSeason = await db.query(sqlseason)
+  const season = resSeason.rows[0].season
+
+  if(newRoles.first().name != 'Novice')
+    return
+
+  const chat = newMember.guild.channels.cache.get('433950651358380034')
+  return chat.send(`${newMember.user} just finished training and was awarded the @**Novice** role!\nHe can now \`${process.env.PREFIX}signup\` for **Season ${season}** and start playing sets with everyone!`)
 })
 
 bot.on('error', error => {
