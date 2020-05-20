@@ -4,7 +4,7 @@ const { getTribe, getUser } = require('../util/utils')
 module.exports = {
   name: 'sets',
   description: 'all sets for current season',
-  aliases: ['in', 'i'],
+  aliases: [],
   usage(prefix) {
     return `\`${prefix}sets [all OR player]\``
   },
