@@ -8,6 +8,8 @@ module.exports.getUserById = function(guild, id) {
 }
 
 module.exports.getUser = function(guild, name) {
+  if(name.startsWith('<'))
+    return name
   const user = guild.members.cache.filter(x => {
     let found
 
