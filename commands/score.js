@@ -18,9 +18,22 @@ module.exports = {
     if(args.length !== 5)
       throw `This command requires an id, both players and both scores\nIn this order: ${this.usage(process.env.PREFIX)}`
 
+    const mentions = message.mentions.users
+
     const setId = args[0]
-    const player1 = getUser(message.guild, args[1])
-    const player2 = getUser(message.guild, args[3])
+    let player1 = {}
+    let player2 = {}
+    if(mentions.size > 0) {
+      if(mentions.size === 2) {
+        const iterator = mentions.values()
+        player1 = iterator.next().value
+        player2 = iterator.next().value
+      } else
+        throw 'You can either ping both users or none to set score :blush:!'
+    } else {
+      player1 = getUser(message.guild, args[1])
+      player2 = getUser(message.guild, args[3])
+    }
     player1.points = parseInt(args[2])
     player2.points = parseInt(args[4])
     if(player1.points > 20000) {
