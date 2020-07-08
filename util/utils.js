@@ -4,7 +4,8 @@ const db = require('../db/index')
 module.exports.getUserById = function(guild, id) {
   const user = guild.members.cache.filter(x => x.user.id === id)
 
-  return user.first().user
+  if(user.first())
+    return user.first().user
 }
 
 module.exports.getUser = function(guild, name) {
