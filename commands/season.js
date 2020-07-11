@@ -22,7 +22,7 @@ module.exports = {
       throw `This command requires the season number like this: ${this.usage(process.env.PREFIX, currentSeason)}`
 
     if(season < 8)
-      throw 'I was around back then... :sweat_smile:'
+      throw 'I wasn\'t around back then... :sweat_smile:'
 
     if(season > currentSeason)
       throw 'I\'m not a wizard, Harry.'
