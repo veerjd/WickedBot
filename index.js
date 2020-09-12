@@ -101,7 +101,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
     return
 
   const chat = newMember.guild.channels.cache.get('433950651358380034')
-  return chat.send(`${newMember.user} just finished training and was awarded the @**Novice** role!\nHe can now \`${process.env.PREFIX}signup\` for **Season ${season}** and start playing sets with everyone!`)
+  return chat.send(`${newMember.user} just finished training and was awarded the @**Novice** role!\nThey now can \`${process.env.PREFIX}signup\` for **Season ${season}** and start playing sets with everyone!`)
 })
 
 bot.on('error', error => {
