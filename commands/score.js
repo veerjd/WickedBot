@@ -7,7 +7,7 @@ module.exports = {
   description: 'declare score for set',
   aliases: ['sc', 'scores'],
   usage(prefix) {
-    return `\`${prefix}score 25 player1 11000 player2 12000\``
+    return `\`${prefix}score 25 player1 16000 player2 16000\``
   },
   category: 'Main',
   permsAllowed: ['VIEW_CHANNEL'],
