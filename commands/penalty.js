@@ -22,6 +22,9 @@ module.exports = {
     const playerInput = getUser(message.guild, args[0])
     const malus = parseInt(args[2])
 
+    if(malus < 1000)
+      throw 'No penalty is smaller than 1000 anymore. Check <#608421845343141913> to verify!'
+
     const sqlc = 'SELECT completed FROM set WHERE id = $1'
     const valuesc = [setId]
     const resc = await db.query(sqlc, valuesc)
