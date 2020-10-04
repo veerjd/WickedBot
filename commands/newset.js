@@ -1,5 +1,5 @@
 const db = require('../db/index')
-const { getMember, getTribe, getRandomTribes, getSeasonRole } = require('../util/utils')
+const { getUser, getTribe, getRandomTribes, getSeasonRole } = require('../util/utils')
 
 module.exports = {
   name: 'newset',
@@ -20,10 +20,10 @@ module.exports = {
 
     if(args.length === 1) {
       player1 = message.member
-      player2 = getMember(message.guild, args[0])
+      player2 = getUser(message.guild, args[0])
     } else if(args.length === 2) {
-      player1 = getMember(message.guild, args[0])
-      player2 = getMember(message.guild, args[1])
+      player1 = getUser(message.guild, args[0])
+      player2 = getUser(message.guild, args[1])
     } else
       throw `This command needs one or two arguments: one player or two.\n\nLike this: ${this.usage(process.env.PREFIX)}`
 

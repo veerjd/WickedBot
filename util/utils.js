@@ -28,7 +28,7 @@ module.exports.getUser = function(guild, name) {
   return user.first().user
 }
 
-module.exports.getMember = function(guild, name) {
+/* module.exports.getMember = function(guild, name) {
   const user = guild.members.cache.filter(x => {
     let found
 
@@ -44,7 +44,7 @@ module.exports.getMember = function(guild, name) {
   if(user.size === 0)
     throw `There is no players matching **${name}**... ¯\\_(ツ)_/¯`
   return user.first()
-}
+} */
 
 module.exports.getTribe = function(tribeCode, emojis) {
   const tribe = tribes[tribeCode.toUpperCase()]
