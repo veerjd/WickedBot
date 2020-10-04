@@ -20,7 +20,7 @@ module.exports = {
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
     if(rowsAgg.length < 2)
-      throw `Looks like not enough players have enough games (3 needed) for a leaderboard to be generated yet for season ${season}`
+      throw `Looks like not enough players have enough games (3 players needed) for a leaderboard to be generated yet for season ${season}`
 
     const sql = 'SELECT * FROM set WHERE completed = true AND season = $1 ORDER BY id'
     const values = [season]
@@ -33,6 +33,7 @@ module.exports = {
     const points = resPoints.rows
 
     rowsAgg.forEach(player => {
+      console.log(player)
       const playerPoints = points.filter(x => x.player_id === player.player_id)
       const playerSets = sets.filter(x => playerPoints.some(y => y.set_id === x.id))
       const opponentsPoints = points.filter(x => playerSets.some(y => y.id === x.set_id && x.player_id !== player.player_id))
