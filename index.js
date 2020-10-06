@@ -78,6 +78,7 @@ bot.on('message', async message => {
     return
   } catch (error) {
     // If error, log it and reply it
+    console.log(error.stack)
     return message.channel.send(`${error}`)
       .then().catch(console.error)
   }
@@ -105,7 +106,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 })
 
 bot.on('error', error => {
-  console.error('ERROR', error)
+  console.error('ERROR', error.stack)
 })
 
 bot.login(process.env.TOKEN);
