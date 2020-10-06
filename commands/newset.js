@@ -40,7 +40,13 @@ module.exports = {
     try {
       const seasonRole = await getSeasonRole(message.guild.roles)
 
-      if(!player1.roles.cache.has(seasonRole.id) || !player2.roles.cache.has(seasonRole.id))
+      const member1 = message.guild.member(player1.id)
+      const member2 = message.guild.member(player2.id)
+
+      if(!member1 || !member2)
+        throw 'There\'s a problem finding one of the players. Contact **jd (alphaSeahorse)** for support.'
+
+      if(!member1.roles.cache.has(seasonRole.id) || !member2.roles.cache.has(seasonRole.id))
         throw `One of the defined players for a this set isn't signed up for **${seasonRole.name}**.\nBoth need to have the **${seasonRole.name}** role by doing \`${process.env.PREFIX}signup\`!`
 
       const sql = 'INSERT INTO set (season, tribes, completed) VALUES ($1, $2, false) RETURNING id, season'
