@@ -32,7 +32,7 @@ module.exports = {
         throw `You are already registered for **${seasonRole.name}**!`
 
       member.roles.add(seasonRole.id)
-      const admin = message.guild.channels.cache.get('601332698895745025')
+      const admin = message.guild.channels.cache.get('696740669804380210')
       const chat = message.guild.channels.cache.get('433950651358380034')
 
       admin.send(`${member.user} just signed up for **${seasonRole.name}**!\n@everyone come say congrats in ${chat}!`)
