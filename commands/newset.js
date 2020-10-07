@@ -20,10 +20,18 @@ module.exports = {
 
     if(args.length === 1) {
       player1 = message.member
-      player2 = getUser(message.guild, args[0])
+      if(message.mentions.size < 1)
+        player2 = getUser(message.guild, args[0])
+      else
+        player2 = message.mentions.users.first()
     } else if(args.length === 2) {
-      player1 = getUser(message.guild, args[0])
-      player2 = getUser(message.guild, args[1])
+      if(message.mentions.size < 1) {
+        player1 = getUser(message.guild, args[0])
+        player2 = getUser(message.guild, args[1])
+      } else {
+        player1 = message.mentions.users.first()
+        player2 = message.mentions.users.last()
+      }
     } else
       throw `This command needs one or two arguments: one player or two.\n\nLike this: ${this.usage(process.env.PREFIX)}`
 
