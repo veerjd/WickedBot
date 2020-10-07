@@ -94,13 +94,13 @@ module.exports = {
 
       message.channel.send(`Here is the score for set ${setId} opposing ${player1} & ${player2}`)
 
-      const sql1 = 'UPDATE points SET points = $1, result = $2, bonus = $3 WHERE set_id = $4 AND player_id = $5'
-      const values1 = [player1.points, player1.result, player1.bonus, setId, player1.id]
+      const sql1 = 'UPDATE points SET points = $1, result = $2 WHERE set_id = $3 AND player_id = $4'
+      const values1 = [player1.points, player1.result, setId, player1.id]
 
       await db.query(sql1, values1)
 
-      const sql2 = 'UPDATE points SET points = $1, result = $2, bonus = $3 WHERE set_id = $4 AND player_id = $5'
-      const values2 = [player2.points, player2.result, player2.bonus, setId, player2.id]
+      const sql2 = 'UPDATE points SET points = $1, result = $2 WHERE set_id = $3 AND player_id = $4'
+      const values2 = [player2.points, player2.result, setId, player2.id]
 
       await db.query(sql2, values2)
 

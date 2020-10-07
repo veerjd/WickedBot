@@ -74,7 +74,6 @@ player = {
   "player_id":
   "points":
   "result":
-  "bonus":
   "malus":
   "gamescore":
   "fullscore":
@@ -82,20 +81,14 @@ player = {
 */
 module.exports.getWinner = function(player1, player2) {
   if(player1.pointsWithMalus > player2.pointsWithMalus) {
-    player1.bonus = 1000
-    player2.bonus = 500
     player1.result = 'win'
     player2.result = 'loss'
   } else if(player1.pointsWithMalus < player2.pointsWithMalus) {
-    player1.bonus = 500
-    player2.bonus = 1000
     player1.result = 'loss'
     player2.result = 'win'
   } else {
     player1.result = 'tie'
-    player1.bonus = 500
     player2.result = 'tie'
-    player2.bonus = 500
   }
 }
 
