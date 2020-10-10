@@ -1,9 +1,9 @@
-const { getSeasonRole } = require('../util/utils')
+const { getSeasonRole, isPlayerPro } = require('../util/utils')
 const db = require('../db/index')
 
 module.exports = {
   name: 'signup',
-  description: 'sign up for the current season',
+  description: 'sign up for the current regular season',
   aliases: ['singup', 'register'],
   usage(prefix) {
     return `\`${prefix}signup\``
@@ -11,7 +11,9 @@ module.exports = {
   category: 'Basic',
   permsAllowed: ['VIEW_CHANNEL'],
   execute: async function(message) {
-    // EXECUTE
+    const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
+    const resSeason = await db.query(sqlseason)
+    const season = resSeason.rows[0].season
 
     const member = message.guild.member(message.author.id)
 
@@ -30,6 +32,11 @@ module.exports = {
       const seasonRole = await getSeasonRole(message.guild.roles)
       if(member.roles.cache.has(seasonRole.id))
         throw `You are already registered for **${seasonRole.name}**!`
+
+      const isPro = await isPlayerPro(message.author.id, season)
+
+      if(isPro)
+        throw 'You can\'t signup for the regular season if you\'re in the pro league.'
 
       member.roles.add(seasonRole.id)
       const admin = message.guild.channels.cache.get('696740669804380210')

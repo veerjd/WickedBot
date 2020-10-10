@@ -1,5 +1,5 @@
 const db = require('../db/index')
-const { getUser, getTribe, getRandomTribes, getSeasonRole } = require('../util/utils')
+const { getUser, getTribe, getRandomTribes, getSeasonRole, findIsProSet } = require('../util/utils')
 
 module.exports = {
   name: 'newset',
@@ -11,21 +11,19 @@ module.exports = {
   category: 'Main',
   permsAllowed: ['VIEW_CHANNEL'],
   execute: async function(message, argsStr, embed) {
-    // EXECUTE
-
     const args = argsStr.split(/ +/)
 
     let player1
     let player2
 
     if(args.length === 1) {
-      player1 = message.member
-      if(message.mentions.size < 1)
+      player1 = message.author
+      if(message.mentions.users.size < 1)
         player2 = getUser(message.guild, args[0])
       else
         player2 = message.mentions.users.first()
     } else if(args.length === 2) {
-      if(message.mentions.size < 1) {
+      if(message.mentions.users.size < 1) {
         player1 = getUser(message.guild, args[0])
         player2 = getUser(message.guild, args[1])
       } else {
@@ -45,6 +43,7 @@ module.exports = {
     const resSeason = await db.query(sqlseason)
 
     const season = resSeason.rows[0].season
+
     try {
       const seasonRole = await getSeasonRole(message.guild.roles)
 
@@ -54,11 +53,13 @@ module.exports = {
       if(!member1 || !member2)
         throw 'There\'s a problem finding one of the players. Contact **jd (alphaSeahorse)** for support.'
 
-      if(!member1.roles.cache.has(seasonRole.id) || !member2.roles.cache.has(seasonRole.id))
+      const isProSet = await findIsProSet(player1, player2, season)
+
+      if((!member1.roles.cache.has(seasonRole.id) || !member2.roles.cache.has(seasonRole.id)) && !isProSet)
         throw `One of the defined players for a this set isn't signed up for **${seasonRole.name}**.\nBoth need to have the **${seasonRole.name}** role by doing \`${process.env.PREFIX}signup\`!`
 
-      const sql = 'INSERT INTO set (season, tribes, completed) VALUES ($1, $2, false) RETURNING id, season'
-      const values = [season, [tribeKeys[0], tribeKeys[1]]]
+      const sql = 'INSERT INTO set (season, tribes, completed, is_pro) VALUES ($1, $2, false, $3) RETURNING id, season'
+      const values = [season, [tribeKeys[0], tribeKeys[1]], isProSet]
 
       const resSet = await db.query(sql, values)
 
@@ -73,7 +74,9 @@ module.exports = {
       await db.query(sql2, values2)
 
       message.channel.send(`New set created\nID: ${resSet.rows[0].id}`)
-      embed.setTitle(`Set ID: ${resSet.rows[0].id}`)
+      if(isProSet)
+        embed.setColor('#ED80A7')
+      embed.setTitle(`${isProSet ? '**Pro** ' : ''}Set ID: ${resSet.rows[0].id}`)
         .addField('Players', `${player1}\n${player2}`)
         .addField('Tribes:', `${tribe1} & ${tribe2}`)
         .setFooter(`Season ${resSet.rows[0].season}`)
