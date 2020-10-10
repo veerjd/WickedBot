@@ -1,5 +1,6 @@
 const db = require('../db/index')
 const { getTribe, getUser } = require('../util/utils')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = {
   name: 'sets',
@@ -31,10 +32,18 @@ module.exports = {
       if(sets.length === 0)
         return embed.setDescription(`There are no sets yet for season ${season}`)
 
-      const incompletes = sets.filter(x => x.completed === false)
-      const completes = sets.filter(x => x.completed === true)
+      const incompletes = sets.filter(x => x.completed === false && !x.is_pro)
+      const completes = sets.filter(x => x.completed === true && !x.is_pro)
+      const incompletesPro = sets.filter(x => x.completed === false && x.is_pro)
+      const completesPro = sets.filter(x => x.completed === true && x.is_pro)
 
-      embed.setTitle(`There are ${sets.length} total games for season ${season}.\n${incompletes.length} incompletes and ${completes.length} completed.`)
+      const otherEmbed = new MessageEmbed().setColor('#ED80A7')
+      otherEmbed.setColor('#ED80A7')
+      otherEmbed.setTitle(`There are ${incompletesPro.length + completesPro.length} total games for **pro** season ${season}.\n${incompletesPro.length} incompletes and ${completesPro.length} completed.`)
+        .setDescription(`You can use \`${process.env.PREFIX}incomplete all\` and \`${process.env.PREFIX}completed all\` to see the sets' details!`)
+
+      message.channel.send(otherEmbed)
+      embed.setTitle(`There are ${incompletes.length + completes.length} total games for regular season ${season}.\n${incompletes.length} incompletes and ${completes.length} completed.`)
         .setDescription(`You can use \`${process.env.PREFIX}incomplete all\` and \`${process.env.PREFIX}completed all\` to see the sets' details!`)
     } else {
       const mention = message.mentions.users.first()
@@ -69,7 +78,7 @@ module.exports = {
         const player2 = message.client.users.cache.get(x.player2)
         const tribe1 = getTribe(x.tribes[0], message.guild.emojis.cache)
         const tribe2 = getTribe(x.tribes[1], message.guild.emojis.cache)
-        setDesc.push(`${x.id}: ${player1} & ${player2}`)
+        setDesc.push(`${x.is_pro ? 'Pro ' : ''}${x.id}: ${player1} & ${player2}`)
         setDesc.push(`${tribe1} & ${tribe2}`)
         setDesc.push('')
       })

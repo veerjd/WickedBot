@@ -35,10 +35,13 @@ module.exports = {
         set.player2 = setPoints[1].player_id
       })
 
+      const completes = sets.filter(x => x.completed === true && !x.is_pro)
+      const completesPro = sets.filter(x => x.completed === true && x.is_pro)
+
       if(sets.length === 0)
         return embed.setDescription(`There are no incomplete sets yet for season ${season}`)
 
-      setDesc.push(`**All ${sets.length} completed games for season ${season}**`)
+      setDesc.push(`**All ${sets.length} completed sets, ${completes.length} regular and ${completesPro.length} pro, for season ${season}**`)
 
     } else {
       const mention = message.mentions.users.first()
@@ -73,11 +76,12 @@ module.exports = {
       const tribe1 = getTribe(x.tribes[0], message.guild.emojis.cache)
       const tribe2 = getTribe(x.tribes[1], message.guild.emojis.cache)
       // if()
-      setDesc.push(`${x.id}: ${player1} & ${player2}`)
+      setDesc.push(`${x.is_pro ? 'Pro ' : ''}${x.id}: ${player1} & ${player2}`)
       setDesc.push(`${tribe1} & ${tribe2}`)
       setDesc.push('')
     })
     embed.setDescription(setDesc)
+      .setColor('#be8286')
     return embed
   }
 };

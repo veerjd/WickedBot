@@ -8,6 +8,29 @@ module.exports.getUserById = function(guild, id) {
     return user.first().user
 }
 
+module.exports.findIsProSet = async function(player1, player2, season) {
+  const isPlayerOnePro = await module.exports.isPlayerPro(player1.id, season)
+  const isPlayerTwoPro = await module.exports.isPlayerPro(player2.id, season)
+
+  if(isPlayerOnePro && isPlayerTwoPro)
+    return true
+  else if(isPlayerOnePro !== isPlayerTwoPro)
+    throw 'Both players have to be in the same league (Pro or Regular) to create a ranked set.'
+  else
+    return false
+}
+
+module.exports.isPlayerPro = async function(player_id, season) {
+  const sql = 'SELECT * FROM pro WHERE player_id = $1 AND season = $2'
+  const values = [player_id, season]
+  const { rows } = await db.query(sql, values)
+
+  if(rows.length < 1)
+    return false
+  else
+    return true
+}
+
 module.exports.getUser = function(guild, name) {
   const user = guild.members.cache.filter(x => {
     let found
