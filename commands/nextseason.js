@@ -1,4 +1,5 @@
 const db = require('../db/index')
+const { getUserById } = require('../util/utils')
 
 module.exports = {
   name: 'nextseason',
@@ -9,7 +10,8 @@ module.exports = {
   },
   category: 'Staff',
   permsAllowed: ['MANAGE_GUILD', 'ADMINISTRATOR'],
-  execute: async function() {
+  // eslint-disable-next-line no-unused-vars
+  execute: async function(message, argsStr, embed) {
 
     const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
     const resSeason = await db.query(sqlseason)
@@ -21,6 +23,101 @@ module.exports = {
 
     if(resSets.rows.length > 0)
       throw `There are still ${resSets.rows.length} incomplete sets for season ${season}.\nYou can get all of them with \`${process.env.PREFIX}incomplete all\` and mark them as completed with \`${process.env.PREFIX}score\`.`
+
+    const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(bonus) AS bonus, SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id HAVING COUNT(id) >= 3'
+    const valuesAgg = [season]
+    const resAgg = await db.query(sqlAgg, valuesAgg)
+    const rowsAgg = resAgg.rows
+    if(rowsAgg.length < 2)
+      throw `Looks like not enough players have enough games (3 players needed) for a leaderboard to be generated yet for season ${season}`
+
+    const sqllb = 'SELECT * FROM set WHERE completed = true AND season = $1 ORDER BY id'
+    const valueslb = [season]
+    const resSetslb = await db.query(sqllb, valueslb)
+    const sets = resSetslb.rows
+
+    const sqlpoints = 'SELECT * FROM points LEFT JOIN set ON set_id = id WHERE completed = true AND season = $1 ORDER BY set_id'
+    const valuespoints = [season]
+    const resPoints = await db.query(sqlpoints, valuespoints)
+    const points = resPoints.rows
+
+    rowsAgg.forEach(player => {
+      const playerPoints = points.filter(x => x.player_id === player.player_id)
+      const playerSets = sets.filter(x => playerPoints.some(y => y.set_id === x.id))
+      const opponentsPoints = points.filter(x => playerSets.some(y => y.id === x.set_id && x.player_id !== player.player_id))
+
+      player.wins = playerPoints.filter(x => x.result === 'win').length
+      player.losses = playerPoints.filter(x => x.result === 'loss').length
+      player.ties = playerPoints.filter(x => x.result === 'tie').length
+
+      let sumOpponent = 0
+      opponentsPoints.forEach(x => {
+        sumOpponent = sumOpponent + x.points - x.malus
+      })
+
+      player.ratio = Number(((parseInt(player.sum) + parseInt(player.bonus) - parseInt(player.malus)) / sumOpponent).toFixed(2))
+    })
+
+    console.log(rowsAgg.length)
+
+    const regularRows = rowsAgg.filter(x => !x.is_pro)
+    const proRows = rowsAgg.filter(x => x.is_pro)
+
+    function compare(a, b) {
+      if (a.ratio < b.ratio)
+        return 1;
+      if (a.ratio > b.ratio)
+        return -1;
+      return 0;
+    }
+    regularRows.sort(compare)
+    proRows.sort(compare)
+
+    let index = 0
+
+    const sqlInsert = 'INSERT INTO lb (rank, player_id, ratio, wins, losses, ties, is_pro, season) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)'
+
+    regularRows.forEach(orderedPlayer => {
+      const user = getUserById(message.guild, orderedPlayer.player_id)
+      if(!user)
+        return
+      index = index + 1
+
+      const data = {
+        rank: index,
+        player_id: user.id,
+        wins: orderedPlayer.wins,
+        losses: orderedPlayer.losses,
+        ties: orderedPlayer.ties,
+        ratio: orderedPlayer.ratio
+      }
+
+      const valuesInsert = [data.rank, data.player_id, data.ratio, data.wins, data.losses, data.ties, false, season]
+
+      db.query(sqlInsert, valuesInsert)
+        .catch(err => { throw err })
+    })
+
+    proRows.forEach(orderedPlayer => {
+      const user = getUserById(message.guild, orderedPlayer.player_id)
+      if(!user)
+        return
+      index = index + 1
+
+      const data = {
+        rank: index,
+        player_id: user.id,
+        wins: orderedPlayer.wins,
+        losses: orderedPlayer.losses,
+        ties: orderedPlayer.ties,
+        ratio: orderedPlayer.ratio
+      }
+
+      const valuesInsert = [data.rank, data.player_id, data.ratio, data.wins, data.losses, data.ties, true, season]
+
+      db.query(sqlInsert, valuesInsert)
+        .catch(err => { throw err })
+    })
 
     const today = new Date().toLocaleDateString()
 

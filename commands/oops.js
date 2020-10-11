@@ -17,6 +17,11 @@ module.exports = {
     const sql = 'DELETE FROM seasons WHERE season = $1'
     const values = [season]
     await db.query(sql, values)
+
+    const sql2 = 'DELETE FROM lb WHERE season = $1'
+    const values2 = [season]
+    await db.query(sql2, values2)
+
     return `We went back in time, to season ${season - 1} bitches!`
   }
 };

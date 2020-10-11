@@ -27,6 +27,7 @@ module.exports = {
     if(season > currentSeason)
       throw 'I\'m not a wizard, Harry.'
 
+<<<<<<< HEAD
     const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true AND is_pro = false GROUP BY player_id HAVING COUNT(id) >= 2'
     const valuesAgg = [season]
     const resAgg = await db.query(sqlAgg, valuesAgg)
@@ -69,6 +70,12 @@ module.exports = {
       return 0;
     }
     rowsAgg.sort(compare)
+=======
+    const sqlAgg = 'SELECT * FROM lb WHERE season = $1 ORDER BY rank'
+    const valuesAgg = [season]
+    const resAgg = await db.query(sqlAgg, valuesAgg)
+    const rowsAgg = resAgg.rows
+>>>>>>> master
 
     let index = 0
     rowsAgg.forEach(orderedPlayer => {
