@@ -24,7 +24,7 @@ module.exports = {
     if(resSets.rows.length > 0)
       throw `There are still ${resSets.rows.length} incomplete sets for season ${season}.\nYou can get all of them with \`${process.env.PREFIX}incomplete all\` and mark them as completed with \`${process.env.PREFIX}score\`.`
 
-    const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(bonus) AS bonus, SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id HAVING COUNT(id) >= 3'
+    const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id HAVING COUNT(id) >= 3'
     const valuesAgg = [season]
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
@@ -55,7 +55,7 @@ module.exports = {
         sumOpponent = sumOpponent + x.points - x.malus
       })
 
-      player.ratio = Number(((parseInt(player.sum) + parseInt(player.bonus) - parseInt(player.malus)) / sumOpponent).toFixed(2))
+      player.ratio = Number((((parseInt(player.sum) - parseInt(player.malus)) / sumOpponent) * (1.3 - 0.3 * Math.pow(0.85, (player.count - 3)))).toFixed(2))
     })
 
     console.log(rowsAgg.length)
