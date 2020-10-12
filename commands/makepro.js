@@ -6,7 +6,7 @@ module.exports = {
   description: 'tell the bot this is a pro player for the current season',
   aliases: [],
   usage(prefix) {
-    return `\`${prefix}makepro\``
+    return `\`${prefix}makepro alph gere zork sila\``
   },
   category: 'Staff',
   permsAllowed: ['MANAGE_GUILD', 'ADMINISTRATOR'],
