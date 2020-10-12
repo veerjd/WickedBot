@@ -3,7 +3,7 @@ const { getProSeasonRole, getUser } = require('../util/utils')
 
 module.exports = {
   name: 'makepro',
-  description: 'tell the bot this is a pro player for the current season',
+  description: 'tell the bot which players are pro players for the current season',
   aliases: [],
   usage(prefix) {
     return `\`${prefix}makepro alph gere zork sila\``
