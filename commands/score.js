@@ -59,7 +59,7 @@ module.exports = {
     const sql1Malus = 'SELECT SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND player_id = $2 AND set_id = $3 GROUP BY player_id'
     const values1Malus = [season, player1.id, setId]
     const player1Malus = await db.query(sql1Malus, values1Malus)
-    if(!player1Malus.rows[0])
+    if(player1Malus.rows.length < 1)
       throw 'Are you sure you have the right set ID?'
 
     player1.malus = parseInt(player1Malus.rows[0].malus)
@@ -67,7 +67,7 @@ module.exports = {
     const sql2Malus = 'SELECT SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND player_id = $2 AND set_id = $3 GROUP BY player_id'
     const values2Malus = [season, player2.id, setId]
     const player2Malus = await db.query(sql2Malus, values2Malus)
-    if(!player1Malus.rows[0])
+    if(player2Malus.rows.length < 1)
       throw 'Are you sure you have the right set ID?'
 
     player2.malus = parseInt(player2Malus.rows[0].malus)
