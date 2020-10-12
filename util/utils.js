@@ -32,7 +32,7 @@ module.exports.isPlayerPro = async function(player_id, season) {
 }
 
 module.exports.getUser = function(guild, name) {
-  const user = guild.members.cache.filter(x => {
+  const members = guild.members.cache.filter(x => {
     let found
 
     if(x.nickname) {
@@ -44,9 +44,11 @@ module.exports.getUser = function(guild, name) {
     return found
   })
 
-  if(user.size === 0)
+  if(members.size === 0)
     throw `There is no players matching **${name}**... ¯\\_(ツ)_/¯`
-  return user.first().user
+  if(members.size > 1)
+    throw `There's more than one player matching **${name}**`
+  return members.first().user
 }
 
 /* module.exports.getMember = function(guild, name) {
