@@ -1,5 +1,5 @@
 const db = require('../db/index')
-const { getUser, getTribe, getRandomTribes, getSeasonRole, findIsProSet } = require('../util/utils')
+const { getUser, getTribe, getRandomTribes, getRegularSeasonRole, findIsProSet } = require('../util/utils')
 
 module.exports = {
   name: 'newset',
@@ -45,7 +45,7 @@ module.exports = {
     const season = resSeason.rows[0].season
 
     try {
-      const seasonRole = await getSeasonRole(message.guild.roles)
+      const seasonRole = await getRegularSeasonRole(message.guild.roles)
 
       const member1 = message.guild.member(player1.id)
       const member2 = message.guild.member(player2.id)

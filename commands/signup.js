@@ -1,4 +1,4 @@
-const { getSeasonRole, isPlayerPro } = require('../util/utils')
+const { getRegularSeasonRole, isPlayerPro } = require('../util/utils')
 const db = require('../db/index')
 
 module.exports = {
@@ -29,7 +29,7 @@ module.exports = {
 
 
     try {
-      const seasonRole = await getSeasonRole(message.guild.roles)
+      const seasonRole = await getRegularSeasonRole(message.guild.roles)
       if(member.roles.cache.has(seasonRole.id))
         throw `You are already registered for **${seasonRole.name}**!`
 

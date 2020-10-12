@@ -115,26 +115,28 @@ module.exports.getWinner = function(player1, player2) {
   }
 }
 
-module.exports.getSeasonRole = async function(rolesManager) {
-  // return new Promise((resolve, reject) => {
-  const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
-  const resSeason = await db.query(sqlseason)
+module.exports.getRegularSeasonRole = async function(rolesManager) {
+  const sql = 'SELECT * FROM leagues WHERE type = \'regular\''
+  const { rows } = await db.query(sql)
 
-  const season = resSeason.rows[0].season
-  const roleName = `Season ${season}`
-  const roleExists = rolesManager.cache.some(role => role.name.startsWith(roleName))
+  const regularSeasonRole = rolesManager.cache.get(rows[0].role_id)
 
-  if(roleExists)
-    return rolesManager.cache.find(role => role.name.startsWith(roleName))
+  if(regularSeasonRole)
+    return regularSeasonRole
   else {
-    try {
-      const role = await rolesManager.create({ data:{
-        name: roleName,
-        color: '#CCCCCC',
-        permissions: 18433
-      } })
-      return role
-    } catch (error) {throw error}
+    throw 'There is a problem that <@217385992837922819> will need to fix :disappointed:.\nI couldn\'t find the regular season role.'
   }
-  // })
+}
+
+module.exports.getProSeasonRole = async function(rolesManager) {
+  const sql = 'SELECT * FROM leagues WHERE type = \'pro\''
+  const { rows } = await db.query(sql)
+
+  const proSeasonRole = rolesManager.cache.get(rows[0].role_id)
+
+  if(proSeasonRole)
+    return proSeasonRole
+  else {
+    throw 'There is a problem that <@217385992837922819> will need to fix :disappointed:.\nI couldn\'t find the pro season role.'
+  }
 }

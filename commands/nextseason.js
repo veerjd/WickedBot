@@ -1,5 +1,5 @@
 const db = require('../db/index')
-const { getUserById } = require('../util/utils')
+const { getUserById, getRegularSeasonRole, getProSeasonRole } = require('../util/utils')
 
 module.exports = {
   name: 'nextseason',
@@ -58,8 +58,6 @@ module.exports = {
       player.ratio = Number((((parseInt(player.sum) - parseInt(player.malus)) / sumOpponent) * (1.3 - 0.3 * Math.pow(0.85, (player.count - 3)))).toFixed(2))
     })
 
-    console.log(rowsAgg.length)
-
     const regularRows = rowsAgg.filter(x => !x.is_pro)
     const proRows = rowsAgg.filter(x => x.is_pro)
 
@@ -76,6 +74,10 @@ module.exports = {
     let index = 0
 
     const sqlInsert = 'INSERT INTO lb (rank, player_id, ratio, wins, losses, ties, is_pro, season) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)'
+
+    const regularSeasonRole = await getRegularSeasonRole(message.guild.roles)
+    regularSeasonRole.edit({ name: `Season ${ season + 1 }` })
+      .then().catch(err => { throw err })
 
     regularRows.forEach(orderedPlayer => {
       const user = getUserById(message.guild, orderedPlayer.player_id)
@@ -95,8 +97,15 @@ module.exports = {
       const valuesInsert = [data.rank, data.player_id, data.ratio, data.wins, data.losses, data.ties, false, season]
 
       db.query(sqlInsert, valuesInsert)
-        .catch(err => { throw err })
+        .then(() => {
+          const member = message.guild.member(user)
+          member.roles.remove(regularSeasonRole)
+        }).catch(err => { throw err })
     })
+
+    const proSeasonRole = await getProSeasonRole(message.guild.roles)
+    proSeasonRole.edit({ name: `Pro Season ${ season + 1 }` })
+      .then().catch(err => { throw err })
 
     proRows.forEach(orderedPlayer => {
       const user = getUserById(message.guild, orderedPlayer.player_id)
@@ -116,7 +125,10 @@ module.exports = {
       const valuesInsert = [data.rank, data.player_id, data.ratio, data.wins, data.losses, data.ties, true, season]
 
       db.query(sqlInsert, valuesInsert)
-        .catch(err => { throw err })
+        .then(() => {
+          const member = message.guild.member(user)
+          member.roles.remove(proSeasonRole)
+        }).catch(err => { throw err })
     })
 
     const today = new Date().toLocaleDateString()
