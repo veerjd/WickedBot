@@ -12,6 +12,7 @@ module.exports = {
   category: 'Staff',
   permsAllowed: ['MANAGE_GUILD', 'ADMINISTRATOR'],
   execute: async function(message, argsStr, embed) {
+    message.lb = 0
     const regLb = await lb.execute(message, argsStr, embed)
     message.channel.send(regLb)
 
