@@ -5,7 +5,7 @@ const lb = require('./leaderboard')
 module.exports = {
   name: 'lball',
   description: 'show season leaderboard without 2 game restriction',
-  aliases: [],
+  aliases: ['bothlb', '2lb'],
   usage(prefix) {
     return `\`${prefix}lball\``
   },
