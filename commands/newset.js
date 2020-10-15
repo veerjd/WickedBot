@@ -73,7 +73,11 @@ module.exports = {
 
       await db.query(sql2, values2)
 
-      message.channel.send(`New set created\nID: ${resSet.rows[0].id}`)
+      let setupText = ''
+      if(player1 !== message.author)
+        setupText = `, opposing ${player1} and ${player2}`
+
+      message.channel.send(`New set created${setupText}\nID: ${resSet.rows[0].id}`)
       if(isProSet)
         embed.setColor('#ED80A7')
       embed.setTitle(`${isProSet ? '**Pro** ' : ''}Set ID: ${resSet.rows[0].id}`)
