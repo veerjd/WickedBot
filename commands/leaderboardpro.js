@@ -24,7 +24,7 @@ module.exports = {
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
     if(rowsAgg.length <= 2 && message.lb === 3)
-      throw `Looks like not enough players have enough games (3 players needed) for a leaderboard to be generated yet for season ${season}`
+      throw `Looks like not enough players have enough sets (3 players needed with 3 completed sets) for a leaderboard to be generated yet for season ${season}`
 
     const sql = 'SELECT * FROM set WHERE completed = true AND season = $1 AND is_pro = true ORDER BY id'
     const values = [season]
