@@ -9,7 +9,7 @@ module.exports = {
   usage(prefix) {
     return `\`${prefix}bulkset gere sgt, front kitu,\` etc`
   },
-  category: 'hidden',
+  category: 'Staff',
   permsAllowed: ['MANAGE_GUILD', 'ADMINISTRATOR'],
   execute: async function(message, argsStr, embed) {
     if(!argsStr)
