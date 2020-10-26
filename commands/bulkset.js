@@ -5,7 +5,7 @@ const { getUser } = require('../util/utils')
 module.exports = {
   name: 'bulkset',
   description: 'create multiple sets at once',
-  aliases: ['bothlb', '2lb'],
+  aliases: ['bulk'],
   usage(prefix) {
     return `\`${prefix}bulkset gere sgt, front kitu,\` etc`
   },
