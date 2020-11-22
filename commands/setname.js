@@ -29,7 +29,7 @@ module.exports = {
       await db.query(sql, values)
     }
 
-    message.channel.send(`You just ${!ressel.rows[0] ? 'set' : 'updated'} your code to:`)
+    message.channel.send(`You just ${!ressel.rows[0] ? 'set' : 'updated'} your name to:`)
     return `**${argsStr}**`
   }
 };
