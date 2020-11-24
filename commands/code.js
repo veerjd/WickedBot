@@ -24,7 +24,7 @@ module.exports = {
       user = getUser(message.guild, message.author.username)
     }
 
-    const sql = 'SELECT * FROM codes WHERE player_id = $1 AND name IS NOT NULL'
+    const sql = 'SELECT * FROM codes WHERE player_id = $1'
     const values = [user.id]
     const { rows } = await db.query(sql, values)
 
