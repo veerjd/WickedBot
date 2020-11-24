@@ -29,7 +29,7 @@ module.exports = {
     const { rows } = await db.query(sql, values)
 
     if (!rows[0])
-      throw `There doesn't seem to be a name registered with me for ${me ? `you:\nYou can set your own code with \`${process.env.PREFIX}setcode YOURCODE\`` : `**${user.username}**'s code.\nUnfortunately, as of right now, only ${user} can set his own code (with \`${process.env.PREFIX}setcode YOURCODE\`)`}`
+      throw `There doesn't seem to be a name registered with me for ${me ? `you:\nYou can set your own code with \`${process.env.PREFIX}setcode YOURCODE\`` : `**${user.username}**'s code.\nUnfortunately, as of right now, only ${user} can set his own code (with \`${process.env.PREFIX}setname YOURNAME\`)`}`
 
     message.channel.send(`Here is **${user.username}**'s code and name:`)
 
