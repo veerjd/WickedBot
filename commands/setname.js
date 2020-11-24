@@ -12,10 +12,13 @@ module.exports = {
   execute: async function (message, argsStr) {
     const user = message.author
 
+    if (argsStr.length < 1)
+      throw 'You need to provide a name to set it up'
+
     if (argsStr.length === 16)
       message.channel.send(`**${user}**, make sure that you are setting your in-game name and not your Polytopia code.\nIf you were inputting your old Polytopia code, make sure to update your game!`)
 
-    const sqlgc = 'SELECT * FROM codes WHERE player_id = $1'
+    const sqlgc = 'SELECT * FROM codes WHERE player_id = $1 AND name IS NOT NULL'
     const valuesgc = [user.id]
     const ressel = await db.query(sqlgc, valuesgc)
 

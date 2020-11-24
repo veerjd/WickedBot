@@ -24,15 +24,15 @@ module.exports = {
       user = getUser(message.guild, message.author.username)
     }
 
-    const sql = 'SELECT * FROM codes WHERE player_id = $1'
+    const sql = 'SELECT * FROM codes WHERE player_id = $1 AND name IS NOT NULL'
     const values = [user.id]
     const { rows } = await db.query(sql, values)
 
     if (!rows[0])
-      throw `There doesn't seem to be a code registered with me for ${me ? `you:\nYou can set your own code with \`${process.env.PREFIX}setcode YOURCODE\`` : `**${user.username}**'s code.\nUnfortunately, as of right now, only ${user} can set his own code (with \`${process.env.PREFIX}setcode YOURCODE\`)`}`
+      throw `There doesn't seem to be a name registered with me for ${me ? `you:\nYou can set your own code with \`${process.env.PREFIX}setcode YOURCODE\`` : `**${user.username}**'s code.\nUnfortunately, as of right now, only ${user} can set his own code (with \`${process.env.PREFIX}setcode YOURCODE\`)`}`
 
     message.channel.send(`Here is **${user.username}**'s code and name:`)
-    message.channel.send(`${rows[0].code} (soon to be deleted)`)
+
     if (rows[0].name)
       return `**${rows[0].name}**`
     else
