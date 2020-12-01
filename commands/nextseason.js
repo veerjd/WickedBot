@@ -1,6 +1,13 @@
 const db = require('../db/index')
 const { getUserById, getRegularSeasonRole, getProSeasonRole } = require('../util/utils')
-
+/**
+ * 1. Get season number
+ * 2. Check if there are any incomplete games
+ * 3. Checks if at least three people have 3 completed games
+ * 4. Generate lbs
+ * 5. Save lbs in table lb + add 1 to the role name
+ * 6. Insert new season and save its date
+ */
 module.exports = {
   name: 'nextseason',
   description: 'increment to next season',
@@ -11,7 +18,7 @@ module.exports = {
   category: 'Staff',
   permsAllowed: ['MANAGE_GUILD', 'ADMINISTRATOR'],
   // eslint-disable-next-line no-unused-vars
-  execute: async function(message, argsStr, embed) {
+  execute: async function (message, argsStr, embed) {
 
     const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
     const resSeason = await db.query(sqlseason)
@@ -21,14 +28,14 @@ module.exports = {
     const values = [season]
     const resSets = await db.query(sql, values)
 
-    if(resSets.rows.length > 0)
+    if (resSets.rows.length > 0)
       throw `There are still ${resSets.rows.length} incomplete sets for season ${season}.\nYou can get all of them with \`${process.env.PREFIX}incomplete all\` and mark them as completed with \`${process.env.PREFIX}score\`.`
 
     const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id HAVING COUNT(id) >= 3'
     const valuesAgg = [season]
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
-    if(rowsAgg.length < 2)
+    if (rowsAgg.length < 2)
       throw `Looks like not enough players have enough games (3 players needed) for a leaderboard to be generated yet for season ${season}`
 
     const sqllb = 'SELECT * FROM set WHERE completed = true AND season = $1 ORDER BY id'
@@ -76,12 +83,12 @@ module.exports = {
     const sqlInsert = 'INSERT INTO lb (rank, player_id, ratio, wins, losses, ties, is_pro, season) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)'
 
     const regularSeasonRole = await getRegularSeasonRole(message.guild.roles)
-    regularSeasonRole.edit({ name: `Season ${ season + 1 }` })
+    regularSeasonRole.edit({ name: `Season ${season + 1}` })
       .then().catch(err => { throw err })
 
     regularRows.forEach(orderedPlayer => {
       const user = getUserById(message.guild, orderedPlayer.player_id)
-      if(!user)
+      if (!user)
         return
       index = index + 1
 
@@ -104,12 +111,12 @@ module.exports = {
     })
 
     const proSeasonRole = await getProSeasonRole(message.guild.roles)
-    proSeasonRole.edit({ name: `Pro Season ${ season + 1 }` })
+    proSeasonRole.edit({ name: `Pro Season ${season + 1}` })
       .then().catch(err => { throw err })
 
     proRows.forEach(orderedPlayer => {
       const user = getUserById(message.guild, orderedPlayer.player_id)
-      if(!user)
+      if (!user)
         return
       index = index + 1
 
