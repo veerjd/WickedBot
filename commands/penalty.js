@@ -11,25 +11,25 @@ module.exports = {
   },
   category: 'Staff',
   permsAllowed: ['VIEW_CHANNEL'],
-  execute: async function(message, argsStr, embed) {
+  execute: async function (message, argsStr, embed) {
     // EXECUTE
 
     const args = argsStr.split(/ +/)
-    if(args.length !== 3)
+    if (args.length !== 3)
       throw `This command requires a player, an id and the point penalty amount.\nIn this order: ${this.usage(process.env.PREFIX)}`
 
     const setId = parseInt(args[1])
     const playerInput = getUser(message.guild, args[0])
     const malus = parseInt(args[2])
 
-    if(malus === 500)
+    if (malus === 500)
       throw 'No penalty is smaller than 1000 anymore. Check <#608421845343141913> to confirm!'
 
     const sqlc = 'SELECT completed FROM set WHERE id = $1'
     const valuesc = [setId]
     const resc = await db.query(sqlc, valuesc)
     let completed
-    if(resc.rows[0])
+    if (resc.rows[0])
       completed = resc.rows[0].completed
     else
       throw 'Seems like I had a problem finding this set...'
@@ -42,13 +42,13 @@ module.exports = {
     const player1 = resp.rows[0]
     const player2 = resp.rows[1]
 
-    if(playerInput.id === player1.player_id) {
+    if (playerInput.id === player1.player_id) {
       player1.malus = malus
       player1.pointsWithMalus = player1.points - player1.malus
       player2.pointsWithMalus = player2.points - player2.malus
       const user1 = getUserById(message.guild, player1.player_id)
       message.channel.send(`${(malus === 0) ? `Penalty reset for ${user1}` : `${user1} violated the rules and so gets a **${malus}** point penalty that'll reflect in the set score\n**Do not subtract this number when you set the score with the \`${process.env.PREFIX}score\` command after the set!**`}`)
-      if(completed)
+      if (completed)
         getWinner(player1, player2)
     } else if (playerInput.id === player2.player_id) {
       player2.malus = malus
@@ -56,7 +56,7 @@ module.exports = {
       player2.pointsWithMalus = player2.points - player2.malus
       const user2 = getUserById(message.guild, player2.player_id)
       message.channel.send(`${(malus === 0) ? `Penalty reset for ${user2}` : `${user2} violated the rules and so gets a **${malus}** point penalty that'll reflect in the set score\n**Do not subtract this number when you set the score with the \`${process.env.PREFIX}score\` command after the set!**`}`)
-      if(completed)
+      if (completed)
         getWinner(player1, player2)
     } else
       throw 'The specified player isn\'t in this set...'
