@@ -41,7 +41,7 @@ module.exports = {
       const admin = message.guild.channels.cache.get('696740669804380210')
       const chat = message.guild.channels.cache.get('433950651358380034')
 
-      admin.send(`${member.user} just signed up for **${seasonRole.name}**!\n@everyone come say congrats in ${chat}!`)
+      admin.send(`${member.user} just signed up for **${seasonRole.name}**!\nCome say congrats in ${chat}!`)
       return `I registered you for **${seasonRole.name}**!`
     } catch (error) {
       return error
