@@ -1,5 +1,4 @@
 const db = require('../db/index')
-const { getUserById } = require('../util/utils')
 
 module.exports = {
   name: 'season',
@@ -10,7 +9,7 @@ module.exports = {
   },
   category: 'Main',
   permsAllowed: ['VIEW_CHANNEL'],
-  execute: async function(message, argsStr, embed) {
+  execute: async function (message, argsStr, embed) {
     const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
     const resSeason = await db.query(sqlseason)
     const currentSeason = parseInt(resSeason.rows[0].season)
@@ -18,13 +17,13 @@ module.exports = {
     const args = argsStr.split(/ +/)
     const season = parseInt(args[0])
 
-    if(isNaN(season))
+    if (isNaN(season))
       throw `This command requires the season number like this: ${this.usage(process.env.PREFIX, currentSeason)}`
 
-    if(season < 8)
+    if (season < 8)
       throw 'I wasn\'t around back then... :sweat_smile:'
 
-    if(season > currentSeason)
+    if (season > currentSeason)
       throw 'I\'m not a wizard, Harry.'
 
     const sqlAgg = 'SELECT * FROM lb WHERE season = $1 ORDER BY rank'
@@ -34,11 +33,8 @@ module.exports = {
 
     let index = 0
     rowsAgg.forEach(orderedPlayer => {
-      const user = getUserById(message.guild, orderedPlayer.player_id)
-      if(!user)
-        return
       index = index + 1
-      embed.addField(`${index}. **${user.username}**`, `(${orderedPlayer.wins}/${orderedPlayer.losses}/${orderedPlayer.ties}): **${orderedPlayer.ratio}**\n`)
+      embed.addField(`${index}. **${orderedPlayer.player_tag}**`, `(${orderedPlayer.wins}/${orderedPlayer.losses}/${orderedPlayer.ties}): **${orderedPlayer.ratio}**\n`)
     })
 
     embed.setTitle(`Leaderboard for season ${season}`)

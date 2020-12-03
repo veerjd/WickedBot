@@ -80,7 +80,7 @@ module.exports = {
 
     let index = 0
 
-    const sqlInsert = 'INSERT INTO lb (rank, player_id, ratio, wins, losses, ties, is_pro, season) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)'
+    const sqlInsert = 'INSERT INTO lb (rank, player_tag, ratio, wins, losses, ties, is_pro, season) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)'
 
     const regularSeasonRole = await getRegularSeasonRole(message.guild.roles)
     regularSeasonRole.edit({ name: `Season ${season + 1}` })
@@ -94,14 +94,14 @@ module.exports = {
 
       const data = {
         rank: index,
-        player_id: user.id,
+        player_tag: user.tag,
         wins: orderedPlayer.wins,
         losses: orderedPlayer.losses,
         ties: orderedPlayer.ties,
         ratio: orderedPlayer.ratio
       }
 
-      const valuesInsert = [data.rank, data.player_id, data.ratio, data.wins, data.losses, data.ties, false, season]
+      const valuesInsert = [data.rank, data.player_tag, data.ratio, data.wins, data.losses, data.ties, false, season]
 
       db.query(sqlInsert, valuesInsert)
         .then(() => {
