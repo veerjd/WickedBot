@@ -10,11 +10,10 @@ module.exports = {
   },
   category: 'Main',
   permsAllowed: ['VIEW_CHANNEL'],
-  execute: async function(message, argsStr, embed) {
-    if(message.lb !== 0)
+  execute: async function (message, argsStr, embed) {
+    if (message.lb !== 0)
       message.lb = 3
 
-    console.log('lbpro', message.lb)
     const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
     const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
@@ -23,7 +22,7 @@ module.exports = {
     const valuesAgg = [season, message.lb]
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
-    if(rowsAgg.length <= 2 && message.lb === 3)
+    if (rowsAgg.length <= 2 && message.lb === 3)
       throw `Looks like not enough players have enough sets (3 players needed with 3 completed sets) for a leaderboard to be generated yet for season ${season}`
 
     const sql = 'SELECT * FROM set WHERE completed = true AND season = $1 AND is_pro = true ORDER BY id'
@@ -65,7 +64,7 @@ module.exports = {
     let index = 0
     rowsAgg.forEach(orderedPlayer => {
       const user = getUserById(message.guild, orderedPlayer.player_id)
-      if(!user)
+      if (!user)
         return
       index = index + 1
       embed.addField(`${index}. **${user.username}**`, `(${orderedPlayer.wins}/${orderedPlayer.losses}/${orderedPlayer.ties}): **${orderedPlayer.ratio}**\n`)

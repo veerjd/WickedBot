@@ -31,11 +31,11 @@ bot.on('ready', () => {
 //
 // --------------------------------------
 bot.on('message', async message => {
-  if(message.author.bot || !message.content.startsWith(prefix) || message.content === prefix)
+  if (message.author.bot || !message.content.startsWith(prefix) || message.content === prefix)
     return
 
   // If it's a DM
-  if(message.channel.type === 'dm')
+  if (message.channel.type === 'dm')
     message.channel.send('I do not support DM commands.')
       .then().catch(console.error)
 
@@ -48,20 +48,20 @@ bot.on('message', async message => {
   const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
   // Return if the command doesn't exist
-  if(!command || command.permsAllowed === undefined)
+  if (!command || command.permsAllowed === undefined)
     return
 
   const wickedbot = message.guild.channels.cache.get('696894142625742905')
   const proMatchmaking = message.guild.channels.cache.get('762784243155730492')
   const adminbot = message.guild.channels.cache.get('702447004105703424')
   const matchmaking = message.guild.channels.cache.get('558364419139043363')
-  if(!(message.channel.id === wickedbot.id || message.channel.id === proMatchmaking.id || message.channel.id === adminbot.id || message.channel.id === matchmaking.id) && command.category !== 'Basic')
+  if (!(message.channel.id === wickedbot.id || message.channel.id === proMatchmaking.id || message.channel.id === adminbot.id || message.channel.id === matchmaking.id) && command.category !== 'Basic')
     return message.channel.send(`You need to be in ${wickedbot}, ${matchmaking}, ${proMatchmaking} or ${adminbot} to use this command of mine.`)
 
-  if(message.member.roles.cache.size < 1 && command.category !== 'Basic')
+  if (message.member.roles.cache.size < 1 && command.category !== 'Basic')
     return message.channel.send('You need a player role to use the bot. Do a practice set then contact the Mods. Good luck!')
 
-  if(command.category === 'Staff' && (!command.permsAllowed.some(x => message.member.hasPermission(x)) && message.author.id !== '217385992837922819'))
+  if (command.category === 'Staff' && (!command.permsAllowed.some(x => message.member.hasPermission(x)) && message.author.id !== '217385992837922819'))
     return message.channel.send('Only an admin can use this command, sorry!')
 
   // Instantiate the embed that's sent to every command execution
@@ -72,25 +72,25 @@ bot.on('message', async message => {
     const reply = await command.execute(message, argsStr, embed);
 
     // if there's a reply, send it
-    if(reply)
+    if (reply)
       message.channel.send(reply)
         .then().catch(console.error)
     return
   } catch (error) {
     // If error, log it and reply it
-    console.log(error.stack)
+    console.log(error.stack || error)
     return message.channel.send(`${error}`)
       .then().catch(console.error)
   }
 })
 
 bot.on('guildMemberUpdate', async (oldMember, newMember) => {
-  if(oldMember.roles.cache.size >= newMember.roles.cache.size)
+  if (oldMember.roles.cache.size >= newMember.roles.cache.size)
     return
 
   const newRoles = newMember.roles.cache
   newRoles.forEach((role, id) => {
-    if(oldMember.roles.cache.has(id))
+    if (oldMember.roles.cache.has(id))
       newRoles.delete(id)
   })
 
@@ -98,7 +98,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
   const resSeason = await db.query(sqlseason)
   const season = resSeason.rows[0].season
 
-  if(newRoles.first().name != 'Novice')
+  if (newRoles.first().name != 'Novice')
     return
 
   const chat = newMember.guild.channels.cache.get('433950651358380034')
