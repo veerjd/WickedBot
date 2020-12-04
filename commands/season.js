@@ -1,4 +1,5 @@
 const db = require('../db/index')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = {
   name: 'season',
@@ -26,7 +27,10 @@ module.exports = {
     if (season > currentSeason)
       throw 'I\'m not a wizard, Harry.'
 
-    const sqlAgg = 'SELECT * FROM lb WHERE season = $1 ORDER BY rank'
+    if (season === currentSeason)
+      throw `Try \`${process.env.PREFIX}lb\` for the current season's leaderboard.`
+
+    const sqlAgg = 'SELECT * FROM lb WHERE season = $1 AND is_pro = false ORDER BY rank'
     const valuesAgg = [season]
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
@@ -38,6 +42,26 @@ module.exports = {
     })
 
     embed.setTitle(`Leaderboard for season ${season}`)
-    return embed
+    message.channel.send(embed)
+
+    const sqlAggPro = 'SELECT * FROM lb WHERE season = $1 AND is_pro = true ORDER BY rank'
+    const valuesAggPro = [season]
+    const resAggPro = await db.query(sqlAggPro, valuesAggPro)
+    const rowsAggPro = resAggPro.rows
+
+    if (rowsAggPro.length < 1)
+      return
+
+    const proEmbed = new MessageEmbed().setColor('#ED80A7')
+
+    index = 0
+    rowsAggPro.forEach(orderedPlayer => {
+      index = index + 1
+      proEmbed.addField(`${index}. **${orderedPlayer.player_tag}**`, `(${orderedPlayer.wins}/${orderedPlayer.losses}/${orderedPlayer.ties}): **${orderedPlayer.ratio}**\n`)
+    })
+
+    proEmbed.setTitle(`Leaderboard for **pro** season ${season}`)
+
+    return proEmbed
   }
 };
