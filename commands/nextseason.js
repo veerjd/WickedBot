@@ -31,7 +31,7 @@ module.exports = {
     if (resSets.rows.length > 0)
       throw `There are still ${resSets.rows.length} incomplete sets for season ${season}.\nYou can get all of them with \`${process.env.PREFIX}incomplete all\` and mark them as completed with \`${process.env.PREFIX}score\`.`
 
-    const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id HAVING COUNT(id) >= 3'
+    const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(malus) AS malus, is_pro, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id, is_pro HAVING COUNT(id) >= 3'
     const valuesAgg = [season]
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
@@ -86,7 +86,7 @@ module.exports = {
     regularSeasonRole.edit({ name: `Season ${season + 1}` })
       .then().catch(err => { throw err })
 
-    regularRows.forEach(orderedPlayer => {
+    regularRows.forEach(async orderedPlayer => {
       const user = getUserById(message.guild, orderedPlayer.player_id)
       if (!user)
         return
@@ -122,14 +122,14 @@ module.exports = {
 
       const data = {
         rank: index,
-        player_id: user.id,
+        player_tag: user.tag,
         wins: orderedPlayer.wins,
         losses: orderedPlayer.losses,
         ties: orderedPlayer.ties,
         ratio: orderedPlayer.ratio
       }
 
-      const valuesInsert = [data.rank, data.player_id, data.ratio, data.wins, data.losses, data.ties, true, season]
+      const valuesInsert = [data.rank, data.player_tag, data.ratio, data.wins, data.losses, data.ties, true, season]
 
       db.query(sqlInsert, valuesInsert)
         .then(() => {
