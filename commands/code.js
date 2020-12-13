@@ -34,7 +34,7 @@ module.exports = {
     message.channel.send(`Here is **${user.username}**'s code and name:`)
 
     if (rows[0].name)
-      return `**${rows[0].name}**`
+      return rows[0].name
     else
       return `${user} should use \`$setname alphaSeahorse\` to save their Moonrise player name!`
   }
