@@ -13,12 +13,13 @@ module.exports = {
   execute: async function(message, argsStr, embed) {
 
     const setDesc = []
-    const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
-    const resSeason = await db.query(sqlseason)
+    const sqlseason = 'SELECT season FROM seasons WHERE guild_id = $1 ORDER BY season DESC LIMIT 1'
+    const valuesseason = [message.guild.id]
+    const resSeason = await db.query(sqlseason, valuesseason)
     const season = resSeason.rows[0].season
 
-    const sql = 'SELECT * FROM set WHERE completed = true AND season = $1 ORDER BY id'
-    const values = [season]
+    const sql = 'SELECT * FROM set WHERE completed = true AND season = $1 AND guild_id = $2 ORDER BY id'
+    const values = [season, message.guild.id]
     const resSets = await db.query(sql, values)
     let sets = resSets.rows
 
@@ -27,7 +28,7 @@ module.exports = {
     const resPoints = await db.query(sqlusers, valuesusers)
     let points = resPoints.rows
 
-    if(argsStr.includes('all')) {
+    if (argsStr.includes('all')) {
 
       sets.forEach(set => {
         const setPoints = points.filter(x => x.set_id === set.id)
@@ -38,7 +39,7 @@ module.exports = {
       const completes = sets.filter(x => x.completed === true && !x.is_pro)
       const completesPro = sets.filter(x => x.completed === true && x.is_pro)
 
-      if(sets.length === 0)
+      if (sets.length === 0)
         return embed.setDescription(`There are no incomplete sets yet for season ${season}`)
 
       setDesc.push(`**All ${sets.length} completed sets, ${completes.length} regular and ${completesPro.length} pro, for season ${season}**`)
@@ -46,9 +47,9 @@ module.exports = {
     } else {
       const mention = message.mentions.users.first()
       let user
-      if(mention)
+      if (mention)
         user = getUser(message.guild, mention.username)
-      else if(argsStr)
+      else if (argsStr)
         user = getUser(message.guild, argsStr.toLowerCase())
       else
         user = getUser(message.guild, message.author.username)
@@ -63,7 +64,7 @@ module.exports = {
         set.player2 = setPoints[1].player_id
       })
 
-      if(sets.length === 0)
+      if (sets.length === 0)
         return embed.setDescription((argsStr) ? `There are no completed games for ${user} during season ${season}` : `You have no completed games for season ${season}`)
 
       setDesc.push(`**All ${sets.length} completed games for ${user} during season ${season}**`)

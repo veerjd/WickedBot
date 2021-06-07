@@ -10,10 +10,11 @@ module.exports = {
   },
   category: 'Basic',
   permsAllowed: ['VIEW_CHANNEL'],
-  execute: async function (message) {
+  execute: async function(message) {
     try {
-      const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
-      const resSeason = await db.query(sqlseason)
+      const sqlseason = 'SELECT season FROM seasons WHERE guild_id = $1 ORDER BY season DESC LIMIT 1'
+      const valuesseason = [message.guild.id]
+      const resSeason = await db.query(sqlseason, valuesseason)
       const season = resSeason.rows[0].season
 
       const member = message.guild.member(message.author.id)
@@ -32,7 +33,7 @@ module.exports = {
       if (member.roles.cache.has(seasonRole.id))
         throw `You are already registered for **${seasonRole.name}**!`
 
-      const isPro = await isPlayerPro(message.author.id, season)
+      const isPro = await isPlayerPro(message.author.id, season, message.guild.id)
 
       if (isPro)
         throw 'You can\'t signup for the regular season if you\'re in the pro league.'

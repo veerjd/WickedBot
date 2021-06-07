@@ -1,16 +1,17 @@
 const tribes = require('./tribes')
+const maps = require('./maps')
 const db = require('../db/index')
 
-module.exports.getUserById = function (guild, id) {
+module.exports.getUserById = function(guild, id) {
   const user = guild.members.cache.filter(x => x.user.id === id)
 
   if (user.first())
     return user.first().user
 }
 
-module.exports.findIsProSet = async function (player1, player2, season) {
-  const isPlayerOnePro = await module.exports.isPlayerPro(player1.id, season)
-  const isPlayerTwoPro = await module.exports.isPlayerPro(player2.id, season)
+module.exports.findIsProSet = async function(player1, player2, season, guildId) {
+  const isPlayerOnePro = await module.exports.isPlayerPro(player1.id, season, guildId)
+  const isPlayerTwoPro = await module.exports.isPlayerPro(player2.id, season, guildId)
 
   if (isPlayerOnePro && isPlayerTwoPro)
     return true
@@ -20,9 +21,9 @@ module.exports.findIsProSet = async function (player1, player2, season) {
     return false
 }
 
-module.exports.isPlayerPro = async function (player_id, season) {
-  const sql = 'SELECT * FROM pro WHERE player_id = $1 AND season = $2'
-  const values = [player_id, season]
+module.exports.isPlayerPro = async function(player_id, season, guildId) {
+  const sql = 'SELECT * FROM pro WHERE player_id = $1 AND season = $2 AND guild_id = $3'
+  const values = [player_id, season, guildId]
   const { rows } = await db.query(sql, values)
 
   if (rows.length < 1)
@@ -31,7 +32,7 @@ module.exports.isPlayerPro = async function (player_id, season) {
     return true
 }
 
-module.exports.getUser = function (guild, name) {
+module.exports.getUser = function(guild, name) {
   const members = guild.members.cache.filter(x => {
     let found
 
@@ -69,7 +70,19 @@ module.exports.getUser = function (guild, name) {
   return user.first()
 } */
 
-module.exports.getTribe = function (tribeCode, emojis) {
+module.exports.getMapName = function(mapCode) {
+  const map = maps.filter(x => x.code === mapCode)
+
+  return map.name
+}
+
+module.exports.getRandomMapTypeCode = function() {
+  const randomMap = maps[Math.floor(Math.random() * maps.length)]
+
+  return randomMap.code
+}
+
+module.exports.getTribe = function(tribeCode, emojis) {
   const tribe = tribes[tribeCode.toUpperCase()]
 
   const tribeEmoji = emojis.filter(x => x.name === tribe.emoji)
@@ -77,8 +90,8 @@ module.exports.getTribe = function (tribeCode, emojis) {
   return tribeEmoji.first()
 }
 
-module.exports.getRandomTribes = function () {
-  const randomKey = function (obj) {
+module.exports.getRandomTribes = function() {
+  const randomKey = function(obj) {
     const keys = Object.keys(obj);
     const key = keys[keys.length * Math.random() << 0]
     return key;
@@ -104,7 +117,7 @@ player = {
   "fullscore":
 }
 */
-module.exports.getWinner = function (player1, player2) {
+module.exports.getWinner = function(player1, player2) {
   if (player1.pointsWithMalus > player2.pointsWithMalus) {
     player1.result = 'win'
     player2.result = 'loss'
@@ -117,9 +130,10 @@ module.exports.getWinner = function (player1, player2) {
   }
 }
 
-module.exports.getRegularSeasonRole = async function (rolesManager) {
-  const sql = 'SELECT * FROM leagues WHERE type = \'regular\''
-  const { rows } = await db.query(sql)
+module.exports.getRegularSeasonRole = async function(rolesManager) {
+  const sql = 'SELECT * FROM leagues WHERE type = \'regular\' AND guild_id = $1'
+  const values = [rolesManager.guild.id]
+  const { rows } = await db.query(sql, values)
 
   const regularSeasonRole = rolesManager.cache.get(rows[0].role_id)
 
@@ -130,9 +144,10 @@ module.exports.getRegularSeasonRole = async function (rolesManager) {
   }
 }
 
-module.exports.getProSeasonRole = async function (rolesManager) {
-  const sql = 'SELECT * FROM leagues WHERE type = \'pro\''
-  const { rows } = await db.query(sql)
+module.exports.getProSeasonRole = async function(rolesManager) {
+  const sql = 'SELECT * FROM leagues WHERE type = \'pro\' AND guild_id = $1'
+  const values = [rolesManager.guild.id]
+  const { rows } = await db.query(sql, values)
 
   const proSeasonRole = rolesManager.cache.get(rows[0].role_id)
 

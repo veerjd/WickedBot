@@ -5,7 +5,7 @@ const tribes = require('../util/tribes')
 
 module.exports = {
   name: 'changetribes',
-  description: 'change tribes for a game id',
+  description: 'change tribes for a set id',
   aliases: ['change', 'settribe', 'changetribe'],
   usage(prefix) {
     return `\`${prefix}changetribes 25 QvO\``
@@ -14,27 +14,27 @@ module.exports = {
   permsAllowed: ['VIEW_CHANNEL'],
   execute: async function(message, argsStr, embed) {
     const args = argsStr.split(/ +/)
-    if(args.length !== 2)
+    if (args.length !== 2)
       throw `Make sure you have the set id and use the format TvT to set.\nLike this: ${this.usage(process.env.PREFIX)}`
     const setId = parseInt(args[0])
     const tribeKeys = args[1].split('v')
 
-    const sql = 'SELECT * FROM set WHERE id = $1 AND completed = false'
-    const values = [setId]
+    const sql = 'SELECT * FROM set WHERE id = $1 AND guild_id = $2 AND completed = false'
+    const values = [setId, message.guild.id]
     const { rows } = await db.query(sql, values)
-    if(rows.length < 1)
-      throw 'Looks like you may be trying to change tribes for a completed, deleted or nonexistant game.\nYou should make sure you have the right id!'
+    if (rows.length < 1)
+      throw 'Looks like you may be trying to change tribes for a completed, deleted, nonexistant set or one in another server.\nYou should make sure you have the right id!'
 
     const emojiCache = message.guild.emojis.cache
 
-    if(!tribes[tribeKeys[0].toUpperCase()] || !tribes[tribeKeys[1].toUpperCase()])
-      throw `This server uses only ${getTribe('Z', emojiCache)}, ${getTribe('Y', emojiCache)}, ${getTribe('X', emojiCache)}, ${getTribe('Q', emojiCache)}, ${getTribe('O', emojiCache)}, ${getTribe('I', emojiCache)}, ${getTribe('H', emojiCache)} and ${getTribe('A', emojiCache)}`
+    if (!tribes[tribeKeys[0].toUpperCase()] || !tribes[tribeKeys[1].toUpperCase()])
+      throw 'This server uses only **Zebasi**, **Yadakk**, **Xin-Xi**, **Quetzali**, **Oumaji**, **Imperius**, **Hoodrick** and **Aquarion**'
 
     const tribe1 = getTribe(tribeKeys[0], emojiCache)
     const tribe2 = getTribe(tribeKeys[1], emojiCache)
 
-    const sqlup = 'UPDATE set SET tribes = $1 WHERE id = $2'
-    const valuesup = [[tribeKeys[0], tribeKeys[1]], setId]
+    const sqlup = 'UPDATE set SET tribes = $1 WHERE id = $2 AND guild_id = $3'
+    const valuesup = [[tribeKeys[0], tribeKeys[1]], setId, message.guild.id]
     await db.query(sqlup, valuesup)
 
     message.channel.send(`New tribes for set ${args[0]}!\n${tribe1} vs ${tribe2}`)

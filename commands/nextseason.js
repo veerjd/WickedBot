@@ -18,28 +18,29 @@ module.exports = {
   category: 'Staff',
   permsAllowed: ['MANAGE_GUILD', 'ADMINISTRATOR'],
   // eslint-disable-next-line no-unused-vars
-  execute: async function (message, argsStr, embed) {
+  execute: async function(message, argsStr, embed) {
 
-    const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
-    const resSeason = await db.query(sqlseason)
+    const sqlseason = 'SELECT season FROM seasons WHERE guild_id = $1 ORDER BY season DESC LIMIT 1'
+    const valuesseason = [message.guild.id]
+    const resSeason = await db.query(sqlseason, valuesseason)
     const season = resSeason.rows[0].season
 
-    const sql = 'SELECT * FROM set WHERE completed = false AND season = $1 ORDER BY id'
-    const values = [season]
+    const sql = 'SELECT * FROM set WHERE completed = false AND season = $1 AND guild_id = $2 ORDER BY id'
+    const values = [season, message.guild.id]
     const resSets = await db.query(sql, values)
 
     if (resSets.rows.length > 0)
       throw `There are still ${resSets.rows.length} incomplete sets for season ${season}.\nYou can get all of them with \`${process.env.PREFIX}incomplete all\` and mark them as completed with \`${process.env.PREFIX}score\`.`
 
-    const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(malus) AS malus, is_pro, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true GROUP BY player_id, is_pro HAVING COUNT(id) >= 3'
-    const valuesAgg = [season]
+    const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(malus) AS malus, is_pro, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true AND guild_id = $2 GROUP BY player_id, is_pro HAVING COUNT(id) >= 3'
+    const valuesAgg = [season, message.guild.id]
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
     if (rowsAgg.length < 2)
       throw `Looks like not enough players have enough games (3 players needed) for a leaderboard to be generated yet for season ${season}`
 
-    const sqllb = 'SELECT * FROM set WHERE completed = true AND season = $1 ORDER BY id'
-    const valueslb = [season]
+    const sqllb = 'SELECT * FROM set WHERE completed = true AND season = $1 AND guild_id = $2 ORDER BY id'
+    const valueslb = [season, message.guild.id]
     const resSetslb = await db.query(sqllb, valueslb)
     const sets = resSetslb.rows
 
@@ -80,7 +81,7 @@ module.exports = {
 
     let index = 0
 
-    const sqlInsert = 'INSERT INTO lb (rank, player_tag, ratio, wins, losses, ties, is_pro, season) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)'
+    const sqlInsert = 'INSERT INTO lb (rank, player_tag, ratio, wins, losses, ties, is_pro, season, guild_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)'
 
     const regularSeasonRole = await getRegularSeasonRole(message.guild.roles)
     regularSeasonRole.edit({ name: `Season ${season + 1}` })
@@ -101,7 +102,7 @@ module.exports = {
         ratio: orderedPlayer.ratio
       }
 
-      const valuesInsert = [data.rank, data.player_tag, data.ratio, data.wins, data.losses, data.ties, false, season]
+      const valuesInsert = [data.rank, data.player_tag, data.ratio, data.wins, data.losses, data.ties, false, season, message.guild.id]
 
       db.query(sqlInsert, valuesInsert)
         .then(() => {
@@ -140,8 +141,8 @@ module.exports = {
 
     const today = new Date().toLocaleDateString()
 
-    const sqlnew = 'INSERT INTO seasons (season, start_date) VALUES ($1, $2)'
-    const valuesnew = [season + 1, today]
+    const sqlnew = 'INSERT INTO seasons (season, start_date, guild_id) VALUES ($1, $2, $3)'
+    const valuesnew = [season + 1, today, message.guild.id]
     await db.query(sqlnew, valuesnew)
     return `We are now season ${season + 1}!`
   }

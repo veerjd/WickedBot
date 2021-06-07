@@ -94,8 +94,9 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
       newRoles.delete(id)
   })
 
-  const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
-  const resSeason = await db.query(sqlseason)
+  const sqlseason = 'SELECT season FROM seasons WHERE guild_id = $1 ORDER BY season DESC LIMIT 1'
+  const valuesseason = [newMember.guild.id]
+  const resSeason = await db.query(sqlseason, valuesseason)
   const season = resSeason.rows[0].season
 
   if (newRoles.first().name != 'Novice')

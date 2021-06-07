@@ -14,12 +14,13 @@ module.exports = {
   execute: async function(message, argsStr, embed) {
 
     const setDesc = []
-    const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
-    const resSeason = await db.query(sqlseason)
+    const sqlseason = 'SELECT season FROM seasons WHERE guild_id = $1 ORDER BY season DESC LIMIT 1'
+    const valuesseason = [message.guild.id]
+    const resSeason = await db.query(sqlseason, valuesseason)
     const season = resSeason.rows[0].season
 
-    const sql = 'SELECT * FROM set WHERE season = $1 ORDER BY id'
-    const values = [season]
+    const sql = 'SELECT * FROM set WHERE season = $1 AND guild_id = $2 ORDER BY id'
+    const values = [season, message.guild.id]
     const resSets = await db.query(sql, values)
     let sets = resSets.rows
 
@@ -28,8 +29,8 @@ module.exports = {
     const resPoints = await db.query(sqlusers, valuesusers)
     let points = resPoints.rows
 
-    if(argsStr.includes('all')) {
-      if(sets.length === 0)
+    if (argsStr.includes('all')) {
+      if (sets.length === 0)
         return embed.setDescription(`There are no sets yet for season ${season}`)
 
       const incompletes = sets.filter(x => x.completed === false && !x.is_pro)
@@ -48,9 +49,9 @@ module.exports = {
     } else {
       const mention = message.mentions.users.first()
       let user
-      if(mention)
+      if (mention)
         user = getUser(message.guild, mention.username)
-      else if(argsStr)
+      else if (argsStr)
         user = getUser(message.guild, argsStr.toLowerCase())
       else
         user = getUser(message.guild, message.author.username)
@@ -68,7 +69,7 @@ module.exports = {
         set.player2 = setPoints[1].player_id
       })
 
-      if(sets.length === 0)
+      if (sets.length === 0)
         return embed.setTitle((argsStr) ? `There are no sets for ${user} during season ${season}` : `You have no sets for season ${season}`)
 
       setDesc.push(`**All sets for ${user} during season ${season}**`)

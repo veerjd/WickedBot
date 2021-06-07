@@ -16,14 +16,14 @@ module.exports = {
     let player1
     let player2
 
-    if(args.length === 1) {
+    if (args.length === 1) {
       player1 = message.author
-      if(message.mentions.users.size < 1)
+      if (message.mentions.users.size < 1)
         player2 = getUser(message.guild, args[0])
       else
         player2 = message.mentions.users.first()
-    } else if(args.length === 2) {
-      if(message.mentions.users.size < 1) {
+    } else if (args.length === 2) {
+      if (message.mentions.users.size < 1) {
         player1 = getUser(message.guild, args[0])
         player2 = getUser(message.guild, args[1])
       } else {
@@ -39,8 +39,9 @@ module.exports = {
     const tribe1 = getTribe(tribeKeys[0], emojiCache)
     const tribe2 = getTribe(tribeKeys[1], emojiCache)
 
-    const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
-    const resSeason = await db.query(sqlseason)
+    const sqlseason = 'SELECT season FROM seasons WHERE guild_id = $1 ORDER BY season DESC LIMIT 1'
+    const valuesseason = [message.guild.id]
+    const resSeason = await db.query(sqlseason, valuesseason)
 
     const season = resSeason.rows[0].season
 
@@ -50,16 +51,16 @@ module.exports = {
       const member1 = message.guild.member(player1.id)
       const member2 = message.guild.member(player2.id)
 
-      if(!member1 || !member2)
+      if (!member1 || !member2)
         throw 'There\'s a problem finding one of the players. Contact **jd (alphaSeahorse)** for support.'
 
-      const isProSet = await findIsProSet(player1, player2, season)
+      const isProSet = await findIsProSet(player1, player2, season, message.guild.id)
 
-      if((!member1.roles.cache.has(seasonRole.id) || !member2.roles.cache.has(seasonRole.id)) && !isProSet)
+      if ((!member1.roles.cache.has(seasonRole.id) || !member2.roles.cache.has(seasonRole.id)) && !isProSet)
         throw `One of the defined players for a this set isn't signed up for **${seasonRole.name}**.\nBoth need to have the **${seasonRole.name}** role by doing \`${process.env.PREFIX}signup\`!`
 
-      const sql = 'INSERT INTO set (season, tribes, completed, is_pro) VALUES ($1, $2, false, $3) RETURNING id, season'
-      const values = [season, [tribeKeys[0], tribeKeys[1]], isProSet]
+      const sql = 'INSERT INTO set (season, tribes, completed, is_pro, guild_id) VALUES ($1, $2, false, $3, $4) RETURNING id, season'
+      const values = [season, [tribeKeys[0], tribeKeys[1]], isProSet, message.guild.id]
 
       const resSet = await db.query(sql, values)
 
@@ -73,15 +74,15 @@ module.exports = {
 
       await db.query(sql2, values2)
 
-      if(!bulk) {
+      if (!bulk) {
         let setupText = ''
-        if(player1 !== message.author)
+        if (player1 !== message.author)
           setupText = `, opposing ${player1} and ${player2}`
 
         message.channel.send(`New set created${setupText}\nID: ${resSet.rows[0].id}`)
       }
 
-      if(isProSet)
+      if (isProSet)
         embed.setColor('#ED80A7')
       embed.setTitle(`${isProSet ? '**Pro** ' : ''}Set ID: ${resSet.rows[0].id}`)
         .addField('Players', `${player1}\n${player2}`)

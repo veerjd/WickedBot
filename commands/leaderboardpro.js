@@ -10,23 +10,24 @@ module.exports = {
   },
   category: 'Main',
   permsAllowed: ['VIEW_CHANNEL'],
-  execute: async function (message, argsStr, embed) {
+  execute: async function(message, argsStr, embed) {
     if (message.lb !== 0)
       message.lb = 3
 
-    const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
-    const resSeason = await db.query(sqlseason)
+    const sqlseason = 'SELECT season FROM seasons WHERE guild_id = $1 ORDER BY season DESC LIMIT 1'
+    const valuesseason = [message.guild.id]
+    const resSeason = await db.query(sqlseason, valuesseason)
     const season = resSeason.rows[0].season
 
-    const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true AND is_pro = true GROUP BY player_id HAVING COUNT(id) >= $2'
-    const valuesAgg = [season, message.lb]
+    const sqlAgg = 'SELECT COUNT(id), SUM(points), SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND completed = true AND is_pro = true AND guild_id = $2 GROUP BY player_id HAVING COUNT(id) >= $3'
+    const valuesAgg = [season, message.guild.id, message.lb]
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
     if (rowsAgg.length <= 2 && message.lb === 3)
       throw `Looks like not enough players have enough sets (3 players needed with 3 completed sets) for a leaderboard to be generated yet for season ${season}`
 
-    const sql = 'SELECT * FROM set WHERE completed = true AND season = $1 AND is_pro = true ORDER BY id'
-    const values = [season]
+    const sql = 'SELECT * FROM set WHERE completed = true AND season = $1 AND is_pro = true AND guild_id = $2 ORDER BY id'
+    const values = [season, message.guild.id]
     const resSets = await db.query(sql, values)
     const sets = resSets.rows
 
