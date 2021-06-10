@@ -1,5 +1,5 @@
 const db = require('../db/index')
-const { getTribe, getRandomTribes } = require('../util/utils')
+const { getTribe, getRandomTribes, getRandomMapTypeCode } = require('../util/utils')
 const set = require('./set')
 
 module.exports = {
@@ -12,23 +12,28 @@ module.exports = {
   category: 'Main',
   permsAllowed: ['VIEW_CHANNEL'],
   execute: async function(message, argsStr, embed) {
-    if (!argsStr || isNaN(parseInt(argsStr)))
+    const argsArray = argsStr.split(/ +/)
+    const setId = parseInt(argsArray[0])
+
+    if (!setId || isNaN(parseInt(setId)))
       throw 'You need to provide the set id.'
 
     const sql = 'SELECT * FROM set WHERE id = $1 AND completed = false AND guild_id = $2'
-    const values = [parseInt(argsStr), message.guild.id]
+    const values = [setId, message.guild.id]
     const { rows } = await db.query(sql, values)
     if (rows.length < 1)
-      throw 'Looks like you may be trying to reroll tribes for a completed, deleted or nonexistant game.\nYou should make sure you have the right id!'
+      throw 'Looks like you may be trying to reroll tribes for a completed, deleted or nonexistant set.\nYou should make sure you have the right id!'
 
     const tribeKeys = getRandomTribes(message.guild.emojis.cache)
-    const emojiCache = message.guild.emojis.cache
+
+    const wickedServer = message.client.guilds.cache.get('433950651358380032')
+    const emojiCache = wickedServer.emojis.cache
 
     const tribe1 = getTribe(tribeKeys[0], emojiCache)
     const tribe2 = getTribe(tribeKeys[1], emojiCache)
 
-    const sqlup = 'UPDATE set SET tribes = $1 WHERE id = $2 AND guild_id = $3'
-    const valuesup = [[tribeKeys[0], tribeKeys[1]], parseInt(argsStr), message.guild.id]
+    const sqlup = 'UPDATE set SET tribes = $1, map_type = $2 WHERE id = $3 AND guild_id = $4'
+    const valuesup = [[tribeKeys[0], tribeKeys[1]], getRandomMapTypeCode(), parseInt(argsStr), message.guild.id]
     await db.query(sqlup, valuesup)
 
     message.channel.send(`New tribes for set ${argsStr}!\n${tribe1} vs ${tribe2}`)

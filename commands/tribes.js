@@ -11,7 +11,9 @@ module.exports = {
   permsAllowed: ['VIEW_CHANNEL'],
   execute: async function(message, argsStr, embed) {
     const tribeKeys = getRandomTribes(message.guild.emojis.cache)
-    const emojiCache = message.guild.emojis.cache
+
+    const wickedServer = message.client.guilds.cache.get('433950651358380032')
+    const emojiCache = wickedServer.emojis.cache
 
     const tribe1 = getTribe(tribeKeys[0], emojiCache)
     const tribe2 = getTribe(tribeKeys[1], emojiCache)

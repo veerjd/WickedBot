@@ -25,7 +25,8 @@ module.exports = {
     if (rows.length < 1)
       throw 'Looks like you may be trying to change tribes for a completed, deleted, nonexistant set or one in another server.\nYou should make sure you have the right id!'
 
-    const emojiCache = message.guild.emojis.cache
+    const wickedServer = message.client.guilds.cache.get('433950651358380032')
+    const emojiCache = wickedServer.emojis.cache
 
     if (!tribes[tribeKeys[0].toUpperCase()] || !tribes[tribeKeys[1].toUpperCase()])
       throw 'This server uses only **Zebasi**, **Yadakk**, **Xin-Xi**, **Quetzali**, **Oumaji**, **Imperius**, **Hoodrick** and **Aquarion**'

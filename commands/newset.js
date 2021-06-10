@@ -1,5 +1,5 @@
 const db = require('../db/index')
-const { getUser, getTribe, getRandomTribes, getRegularSeasonRole, findIsProSet } = require('../util/utils')
+const { getUser, getTribe, getRandomTribes, getRegularSeasonRole, findIsProSet, getRandomMapTypeCode, getMapName } = require('../util/utils')
 
 module.exports = {
   name: 'newset',
@@ -34,7 +34,10 @@ module.exports = {
       throw `This command needs one or two arguments: one player or two.\n\nLike this: ${this.usage(process.env.PREFIX)}`
 
     const tribeKeys = getRandomTribes(message.guild.emojis.cache)
-    const emojiCache = message.guild.emojis.cache
+    const mapTypeCode = getRandomMapTypeCode()
+
+    const wickedServer = message.client.guilds.cache.get('433950651358380032')
+    const emojiCache = wickedServer.emojis.cache
 
     const tribe1 = getTribe(tribeKeys[0], emojiCache)
     const tribe2 = getTribe(tribeKeys[1], emojiCache)
@@ -59,8 +62,8 @@ module.exports = {
       if ((!member1.roles.cache.has(seasonRole.id) || !member2.roles.cache.has(seasonRole.id)) && !isProSet)
         throw `One of the defined players for a this set isn't signed up for **${seasonRole.name}**.\nBoth need to have the **${seasonRole.name}** role by doing \`${process.env.PREFIX}signup\`!`
 
-      const sql = 'INSERT INTO set (season, tribes, completed, is_pro, guild_id) VALUES ($1, $2, false, $3, $4) RETURNING id, season'
-      const values = [season, [tribeKeys[0], tribeKeys[1]], isProSet, message.guild.id]
+      const sql = 'INSERT INTO set (season, tribes, completed, is_pro, guild_id, map_type) VALUES ($1, $2, false, $3, $4, $5) RETURNING id, season'
+      const values = [season, [tribeKeys[0], tribeKeys[1]], isProSet, message.guild.id, mapTypeCode]
 
       const resSet = await db.query(sql, values)
 
@@ -84,8 +87,10 @@ module.exports = {
 
       if (isProSet)
         embed.setColor('#ED80A7')
+
       embed.setTitle(`${isProSet ? '**Pro** ' : ''}Set ID: ${resSet.rows[0].id}`)
         .addField('Players', `${player1}\n${player2}`)
+        .addField('Map type', getMapName(mapTypeCode))
         .addField('Tribes:', `${tribe1} & ${tribe2}`)
         .setFooter(`Season ${resSet.rows[0].season}`)
       return embed

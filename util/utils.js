@@ -71,7 +71,10 @@ module.exports.getUser = function(guild, name) {
 } */
 
 module.exports.getMapName = function(mapCode) {
-  const map = maps.filter(x => x.code === mapCode)
+  if (!mapCode)
+    return 'None set'
+
+  const map = maps.filter(x => x.code === mapCode.toLowerCase())[0]
 
   return map.name
 }

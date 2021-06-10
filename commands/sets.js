@@ -77,8 +77,12 @@ module.exports = {
       sets.forEach(x => {
         const player1 = message.client.users.cache.get(x.player1)
         const player2 = message.client.users.cache.get(x.player2)
-        const tribe1 = getTribe(x.tribes[0], message.guild.emojis.cache)
-        const tribe2 = getTribe(x.tribes[1], message.guild.emojis.cache)
+
+        const wickedServer = message.client.guilds.cache.get('433950651358380032')
+        const emojiCache = wickedServer.emojis.cache
+
+        const tribe1 = getTribe(x.tribes[0], emojiCache)
+        const tribe2 = getTribe(x.tribes[1], emojiCache)
         setDesc.push(`${x.is_pro ? 'Pro ' : ''}${x.id}: ${player1} & ${player2}`)
         setDesc.push(`${tribe1} & ${tribe2}`)
         setDesc.push('')
