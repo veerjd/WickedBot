@@ -15,8 +15,8 @@ module.exports = [
     name: 'Archipelago',
     code: 'a'
   },
-  {
-    name: 'Water World',
-    code: 'w'
-  }
+  // {
+  //   name: 'Water World',
+  //   code: 'w'
+  // }
 ]

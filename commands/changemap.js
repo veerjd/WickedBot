@@ -20,7 +20,7 @@ module.exports = {
 
     const mapType = getMapName(mapTypeCode[0])
     if (!mapType)
-      throw 'The specified map type doesn\'t exist.\nHere\'s the list of available map types: Dryland, Lakes, Continents, Archipelago and Water World'
+      throw 'The specified map type doesn\'t exist.\nHere\'s the list of available map types: Dryland, Lakes, Continents and Archipelago'
 
     const sql = 'SELECT * FROM set WHERE id = $1 AND guild_id = $2 AND completed = false'
     const values = [setId, message.guild.id]
