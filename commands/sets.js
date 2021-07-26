@@ -1,5 +1,5 @@
 const db = require('../db/index')
-const { getTribe, getUser } = require('../util/utils')
+const { getTribe, getUser, getMapName } = require('../util/utils')
 const { MessageEmbed } = require('discord.js')
 
 module.exports = {
@@ -84,7 +84,7 @@ module.exports = {
         const tribe1 = getTribe(x.tribes[0], emojiCache)
         const tribe2 = getTribe(x.tribes[1], emojiCache)
         setDesc.push(`${x.is_pro ? 'Pro ' : ''}${x.id}: ${player1} & ${player2}`)
-        setDesc.push(`${tribe1} & ${tribe2}`)
+        setDesc.push(`${tribe1} & ${tribe2} (${getMapName(x.map_type)})`)
         setDesc.push('')
       })
 
