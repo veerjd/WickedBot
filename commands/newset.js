@@ -56,7 +56,7 @@ module.exports = {
       if (!member1 || !member2)
         throw 'There\'s a problem finding one of the players. Contact **jd (alphaSeahorse)** for support.'
 
-      const isProSet = await findIsProSet(player1, player2, season, message.guild.id)
+      const isProSet = await findIsProSet(player1, player2, season)
 
       if ((!member1.roles.cache.has(seasonRole.id) || !member2.roles.cache.has(seasonRole.id)) && !isProSet)
         throw `One of the defined players for a this set isn't signed up for **${seasonRole.name}**.\nBoth need to have the **${seasonRole.name}** role by doing \`${process.env.PREFIX}signup\`!`
