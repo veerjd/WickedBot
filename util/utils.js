@@ -9,9 +9,9 @@ module.exports.getUserById = function(guild, id) {
     return user.first().user
 }
 
-module.exports.findIsProSet = async function(player1, player2, season, guildId) {
-  const isPlayerOnePro = await module.exports.isPlayerPro(player1.id, season, guildId)
-  const isPlayerTwoPro = await module.exports.isPlayerPro(player2.id, season, guildId)
+module.exports.findIsProSet = async function(player1, player2, season) {
+  const isPlayerOnePro = await module.exports.isPlayerPro(player1.id, season)
+  const isPlayerTwoPro = await module.exports.isPlayerPro(player2.id, season)
 
   if (isPlayerOnePro && isPlayerTwoPro)
     return true
@@ -21,9 +21,9 @@ module.exports.findIsProSet = async function(player1, player2, season, guildId) 
     return false
 }
 
-module.exports.isPlayerPro = async function(player_id, season, guildId) {
-  const sql = 'SELECT * FROM pro WHERE player_id = $1 AND season = $2 AND guild_id = $3'
-  const values = [player_id, season, guildId]
+module.exports.isPlayerPro = async function(player_id, season) {
+  const sql = 'SELECT * FROM pro WHERE player_id = $1 AND season = $2'
+  const values = [player_id, season]
   const { rows } = await db.query(sql, values)
 
   if (rows.length < 1)
@@ -134,9 +134,8 @@ module.exports.getWinner = function(player1, player2) {
 }
 
 module.exports.getRegularSeasonRole = async function(rolesManager) {
-  const sql = 'SELECT * FROM leagues WHERE type = \'regular\' AND guild_id = $1'
-  const values = [rolesManager.guild.id]
-  const { rows } = await db.query(sql, values)
+  const sql = 'SELECT * FROM leagues WHERE type = \'regular\''
+  const { rows } = await db.query(sql)
 
   const regularSeasonRole = rolesManager.cache.get(rows[0].role_id)
 
@@ -148,9 +147,8 @@ module.exports.getRegularSeasonRole = async function(rolesManager) {
 }
 
 module.exports.getProSeasonRole = async function(rolesManager) {
-  const sql = 'SELECT * FROM leagues WHERE type = \'pro\' AND guild_id = $1'
-  const values = [rolesManager.guild.id]
-  const { rows } = await db.query(sql, values)
+  const sql = 'SELECT * FROM leagues WHERE type = \'pro\''
+  const { rows } = await db.query(sql)
 
   const proSeasonRole = rolesManager.cache.get(rows[0].role_id)
 

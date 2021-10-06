@@ -17,17 +17,16 @@ module.exports = {
   permsAllowed: ['MANAGE_GUILD', 'ADMINISTRATOR'],
   // eslint-disable-next-line no-unused-vars
   execute: async function(message, argsStr, embed) {
-    const sqlseason = 'SELECT season FROM seasons WHERE guild_id = $1 ORDER BY season DESC LIMIT 1'
-    const valueseason = [message.guild.id]
-    const resSeason = await db.query(sqlseason, valueseason)
+    const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
+    const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
 
-    const sql = 'DELETE FROM seasons WHERE season = $1 AND guild_id = $2'
-    const values = [season, message.guild.id]
+    const sql = 'DELETE FROM seasons WHERE season = $1'
+    const values = [season]
     await db.query(sql, values)
 
-    const sql2 = 'DELETE FROM lb WHERE season = $1 AND guild_id = $2'
-    const values2 = [season - 1, message.guild.id]
+    const sql2 = 'DELETE FROM lb WHERE season = $1'
+    const values2 = [season - 1]
     await db.query(sql2, values2)
 
     const regularSeasonRole = await getRegularSeasonRole(message.guild.roles)

@@ -52,21 +52,20 @@ module.exports = {
       message.channel.send('Minimum points for a player in a set is 6000.')
       player2.points = 6000
     }
-    const sqlseason = 'SELECT season FROM seasons WHERE guild_id = $1 ORDER BY season DESC LIMIT 1'
-    const valuesseason = [message.guild.id]
-    const resSeason = await db.query(sqlseason, valuesseason)
+    const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
+    const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
 
-    const sql1Malus = 'SELECT SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND player_id = $2 AND set_id = $3 AND guild_id = $4 GROUP BY player_id'
-    const values1Malus = [season, player1.id, setId, message.guild.id]
+    const sql1Malus = 'SELECT SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND player_id = $2 AND set_id = $3 GROUP BY player_id'
+    const values1Malus = [season, player1.id, setId]
     const player1Malus = await db.query(sql1Malus, values1Malus)
     if (player1Malus.rows.length < 1)
       throw 'Are you sure you have the right set ID?'
 
     player1.malus = parseInt(player1Malus.rows[0].malus)
 
-    const sql2Malus = 'SELECT SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND player_id = $2 AND set_id = $3 AND guild_id = $4 GROUP BY player_id'
-    const values2Malus = [season, player2.id, setId, message.guild.id]
+    const sql2Malus = 'SELECT SUM(malus) AS malus, player_id FROM set INNER JOIN points ON set_id = id WHERE season = $1 AND player_id = $2 AND set_id = $3 GROUP BY player_id'
+    const values2Malus = [season, player2.id, setId]
     const player2Malus = await db.query(sql2Malus, values2Malus)
     if (player2Malus.rows.length < 1)
       throw 'Are you sure you have the right set ID?'
@@ -79,8 +78,8 @@ module.exports = {
     getWinner(player1, player2)
 
     try {
-      const sqlget = 'SELECT * FROM set INNER JOIN points ON id = set_id WHERE id = $1 AND guild_id = $2'
-      const valuesget = [setId, message.guild.id]
+      const sqlget = 'SELECT * FROM set INNER JOIN points ON id = set_id WHERE id = $1'
+      const valuesget = [setId]
       const ressel = await db.query(sqlget, valuesget)
       if (ressel.rows.length === 0)
         throw 'Looks like there\'s not set this id'
@@ -105,8 +104,8 @@ module.exports = {
 
       await db.query(sql2, values2)
 
-      const sql = 'UPDATE set SET completed = true WHERE id = $1 AND guild_id = $2'
-      const values = [ressel.rows[0].id, message.guild.id]
+      const sql = 'UPDATE set SET completed = true WHERE id = $1'
+      const values = [ressel.rows[0].id]
       await db.query(sql, values)
 
       return set.execute(message, ressel.rows[0].id, embed)

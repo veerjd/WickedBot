@@ -11,9 +11,8 @@ module.exports = {
   category: 'Main',
   permsAllowed: ['VIEW_CHANNEL'],
   execute: async function(message, argsStr, embed) {
-    const sqlseason = 'SELECT season FROM seasons WHERE guild_id = $1 ORDER BY season DESC LIMIT 1'
-    const valuesseason = [message.guild.id]
-    const resSeason = await db.query(sqlseason, valuesseason)
+    const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
+    const resSeason = await db.query(sqlseason)
     const currentSeason = parseInt(resSeason.rows[0].season)
 
     const args = argsStr.split(/ +/)
@@ -31,8 +30,8 @@ module.exports = {
     if (season === currentSeason)
       throw `Try \`${process.env.PREFIX}lb\` for the current season's leaderboard.`
 
-    const sqlAgg = 'SELECT * FROM lb WHERE season = $1 AND is_pro = false AND guild_id = $2 ORDER BY rank'
-    const valuesAgg = [season, message.guild.id]
+    const sqlAgg = 'SELECT * FROM lb WHERE season = $1 AND is_pro = false ORDER BY rank'
+    const valuesAgg = [season]
     const resAgg = await db.query(sqlAgg, valuesAgg)
     const rowsAgg = resAgg.rows
 
@@ -45,8 +44,8 @@ module.exports = {
     embed.setTitle(`Leaderboard for season ${season}`)
     message.channel.send(embed)
 
-    const sqlAggPro = 'SELECT * FROM lb WHERE season = $1 AND is_pro = true AND guild_id = $2 ORDER BY rank'
-    const valuesAggPro = [season, message.guild.id]
+    const sqlAggPro = 'SELECT * FROM lb WHERE season = $1 AND is_pro = true ORDER BY rank'
+    const valuesAggPro = [season]
     const resAggPro = await db.query(sqlAggPro, valuesAggPro)
     const rowsAggPro = resAggPro.rows
 

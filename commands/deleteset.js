@@ -13,11 +13,11 @@ module.exports = {
     if (!argsStr || isNaN(parseInt(argsStr)))
       throw 'You need to provide the set id.'
 
-    const sqlset = 'DELETE FROM set WHERE id = $1 AND guild_id = $2'
-    const values = [argsStr, message.guild.id]
+    const sqlset = 'DELETE FROM set WHERE id = $1'
+    const values = [argsStr]
     await db.query(sqlset, values)
 
-    const sqlpoints = 'DELETE FROM points WHERE set_id = $1 AND guild_id = $2'
+    const sqlpoints = 'DELETE FROM points WHERE set_id = $1'
     await db.query(sqlpoints, values)
     return `Set ${argsStr} deleted.`
   }

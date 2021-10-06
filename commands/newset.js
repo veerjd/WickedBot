@@ -42,9 +42,8 @@ module.exports = {
     const tribe1 = getTribe(tribeKeys[0], emojiCache)
     const tribe2 = getTribe(tribeKeys[1], emojiCache)
 
-    const sqlseason = 'SELECT season FROM seasons WHERE guild_id = $1 ORDER BY season DESC LIMIT 1'
-    const valuesseason = [message.guild.id]
-    const resSeason = await db.query(sqlseason, valuesseason)
+    const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
+    const resSeason = await db.query(sqlseason)
 
     const season = resSeason.rows[0].season
 
@@ -62,8 +61,8 @@ module.exports = {
       if ((!member1.roles.cache.has(seasonRole.id) || !member2.roles.cache.has(seasonRole.id)) && !isProSet)
         throw `One of the defined players for a this set isn't signed up for **${seasonRole.name}**.\nBoth need to have the **${seasonRole.name}** role by doing \`${process.env.PREFIX}signup\`!`
 
-      const sql = 'INSERT INTO set (season, tribes, completed, is_pro, guild_id, map_type) VALUES ($1, $2, false, $3, $4, $5) RETURNING id, season'
-      const values = [season, [tribeKeys[0], tribeKeys[1]], isProSet, message.guild.id, mapTypeCode]
+      const sql = 'INSERT INTO set (season, tribes, completed, is_pro, map_type) VALUES ($1, $2, false, $3, $4) RETURNING id, season'
+      const values = [season, [tribeKeys[0], tribeKeys[1]], isProSet, mapTypeCode]
 
       const resSet = await db.query(sql, values)
 

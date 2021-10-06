@@ -22,8 +22,8 @@ module.exports = {
     if (!mapType)
       throw 'The specified map type doesn\'t exist.\nHere\'s the list of available map types: Dryland, Lakes, Continents and Archipelago'
 
-    const sql = 'SELECT * FROM set WHERE id = $1 AND guild_id = $2 AND completed = false'
-    const values = [setId, message.guild.id]
+    const sql = 'SELECT * FROM set WHERE id = $1 AND completed = false'
+    const values = [setId]
     const { rows } = await db.query(sql, values)
     if (rows.length < 1)
       throw 'Looks like you may be trying to change map type for a completed, deleted, nonexistant set or one in another server.\nYou should make sure you have the right id!'

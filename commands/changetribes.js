@@ -19,8 +19,8 @@ module.exports = {
     const setId = parseInt(args[0])
     const tribeKeys = args[1].split('v')
 
-    const sql = 'SELECT * FROM set WHERE id = $1 AND guild_id = $2 AND completed = false'
-    const values = [setId, message.guild.id]
+    const sql = 'SELECT * FROM set WHERE id = $1 AND completed = false'
+    const values = [setId]
     const { rows } = await db.query(sql, values)
     if (rows.length < 1)
       throw 'Looks like you may be trying to change tribes for a completed, deleted, nonexistant set or one in another server.\nYou should make sure you have the right id!'
@@ -34,8 +34,8 @@ module.exports = {
     const tribe1 = getTribe(tribeKeys[0], emojiCache)
     const tribe2 = getTribe(tribeKeys[1], emojiCache)
 
-    const sqlup = 'UPDATE set SET tribes = $1 WHERE id = $2 AND guild_id = $3'
-    const valuesup = [[tribeKeys[0], tribeKeys[1]], setId, message.guild.id]
+    const sqlup = 'UPDATE set SET tribes = $1 WHERE id = $2'
+    const valuesup = [[tribeKeys[0], tribeKeys[1]], setId]
     await db.query(sqlup, valuesup)
 
     message.channel.send(`New tribes for set ${args[0]}!\n${tribe1} vs ${tribe2}`)

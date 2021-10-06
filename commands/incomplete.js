@@ -13,13 +13,12 @@ module.exports = {
   execute: async function(message, argsStr, embed) {
 
     const setDesc = []
-    const sqlseason = 'SELECT season FROM seasons WHERE guild_id = $1 ORDER BY season DESC LIMIT 1'
-    const valuesseason = [message.guild.id]
-    const resSeason = await db.query(sqlseason, valuesseason)
+    const sqlseason = 'SELECT season FROM seasons ORDER BY season DESC LIMIT 1'
+    const resSeason = await db.query(sqlseason)
     const season = resSeason.rows[0].season
 
-    const sql = 'SELECT * FROM set WHERE completed = false AND season = $1 AND guild_id = $2 ORDER BY id'
-    const values = [season, message.guild.id]
+    const sql = 'SELECT * FROM set WHERE completed = false AND season = $1 ORDER BY id'
+    const values = [season]
     const resSets = await db.query(sql, values)
     let sets = resSets.rows
 

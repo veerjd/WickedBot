@@ -25,8 +25,8 @@ module.exports = {
     if (malus === 500)
       throw 'No penalty is smaller than 1000 anymore. Check <#608421845343141913> to confirm!'
 
-    const sqlc = 'SELECT completed FROM set WHERE id = $1 AND guild_id = $2'
-    const valuesc = [setId, message.guild.id]
+    const sqlc = 'SELECT completed FROM set WHERE id = $1'
+    const valuesc = [setId]
     const resc = await db.query(sqlc, valuesc)
     let completed
     if (resc.rows[0])
@@ -61,12 +61,12 @@ module.exports = {
     } else
       throw 'The specified player isn\'t in this set...'
 
-    const sql1 = 'UPDATE points SET malus = $1, result = $2 WHERE player_id = $3 AND set_id = $4 AND guild_id = $5'
-    const values1 = [player1.malus, player1.result, player1.player_id, setId, message.guild.id]
+    const sql1 = 'UPDATE points SET malus = $1, result = $2 WHERE player_id = $3 AND set_id = $4'
+    const values1 = [player1.malus, player1.result, player1.player_id, setId]
     await db.query(sql1, values1)
 
-    const sql2 = 'UPDATE points SET malus = $1, result = $2 WHERE player_id = $3 AND set_id = $4 AND guild_id = $5'
-    const values2 = [player2.malus, player2.result, player2.player_id, setId, message.guild.id]
+    const sql2 = 'UPDATE points SET malus = $1, result = $2 WHERE player_id = $3 AND set_id = $4'
+    const values2 = [player2.malus, player2.result, player2.player_id, setId]
     await db.query(sql2, values2)
 
     return set.execute(message, setId, embed)
