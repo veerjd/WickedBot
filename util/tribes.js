@@ -30,5 +30,13 @@ module.exports = {
   H: {
     name: 'Hoodrick',
     emoji: 'hood'
+  },
+  L: {
+    name: 'Luxidoor',
+    emoji: 'luxi'
+  },
+  K: {
+    name: 'Kickoo',
+    emoji: 'kick'
   }
 }
