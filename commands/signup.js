@@ -38,10 +38,10 @@ module.exports = {
         throw 'You can\'t signup for the regular season if you\'re in the pro league.'
 
       member.roles.add(seasonRole.id)
-      const admin = message.guild.channels.cache.get('696740669804380210')
+      const adminSpam = message.guild.channels.cache.get('702447004105703424')
       const chat = message.guild.channels.cache.get('433950651358380034')
 
-      admin.send(`${member.user} just signed up for **${seasonRole.name}**!\nCome say congrats in ${chat}!`)
+      adminSpam.send(`${member.user} just signed up for **${seasonRole.name}**!\nCome say congrats in ${chat}!`)
       return `I registered you for **${seasonRole.name}**!`
     } catch (error) {
       return error
